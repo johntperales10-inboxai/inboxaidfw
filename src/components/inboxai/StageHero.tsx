@@ -51,6 +51,49 @@ export function StageHero({ onStart }: Props) {
           </button>
         </div>
 
+        <div className="mt-16 flex justify-center">
+          <div className="relative w-full max-w-md">
+            <div aria-hidden className="absolute -inset-px rounded-3xl bg-gradient-to-b from-primary/40 via-primary/10 to-transparent blur-xl opacity-60" />
+            <div className="relative rounded-3xl border border-primary/30 bg-card/80 backdrop-blur p-8 shadow-2xl shadow-primary/10">
+              <div className="flex justify-center">
+                <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium uppercase tracking-wider">
+                  One time payment
+                </span>
+              </div>
+
+              <div className="mt-6 flex items-baseline justify-center gap-1">
+                <span className="text-6xl font-bold tracking-tight">$50</span>
+              </div>
+              <p className="mt-2 text-center text-sm text-muted-foreground">
+                No subscription. No recurring charges. Ever.
+              </p>
+
+              <ul className="mt-8 space-y-3">
+                {included.map((item) => (
+                  <li key={item} className="flex items-start gap-3 text-sm">
+                    <span className="mt-0.5 size-5 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+                      <Check className="size-3 text-primary" />
+                    </span>
+                    <span className="text-foreground/90 leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <a
+                href="https://johntperales.gumroad.com/l/xypgwz"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-8 w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/30"
+              >
+                Buy now — $17
+              </a>
+              <p className="mt-3 text-center text-xs text-muted-foreground">
+                After payment, return to this page to set up your agent.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="mt-20 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {features.map((f) => (
             <div key={f.title} className="p-6 rounded-2xl bg-card border border-border hover:border-primary/40 transition-colors">
