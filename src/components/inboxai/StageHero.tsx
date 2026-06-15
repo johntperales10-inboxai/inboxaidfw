@@ -1,4 +1,4 @@
-import { ArrowRight, Star, Trash2, Mail, MessageSquare } from "lucide-react";
+import { ArrowRight, Star, Trash2, Mail, MessageSquare, Check } from "lucide-react";
 
 interface Props {
   onStart: () => void;
@@ -9,6 +9,16 @@ const features = [
   { icon: Trash2, title: "Clears spam automatically", desc: "Empties your spam folder into trash so it never piles up again." },
   { icon: Mail, title: "Unsubscribes for you", desc: "Finds newsletters you haven't opened in months and unsubscribes automatically." },
   { icon: MessageSquare, title: "Texts you when unsure", desc: "Never guesses. Sends you a Telegram message when it needs your input." },
+];
+
+const included = [
+  "AI reads and categorizes every email automatically",
+  "Stars emails from people you trust",
+  "Clears spam every hour",
+  "Unsubscribes from newsletters you've forgotten",
+  "Telegram or email alerts when it needs your input",
+  "Runs inside your own Google account — completely private",
+  "Step by step setup guide included",
 ];
 
 export function StageHero({ onStart }: Props) {
