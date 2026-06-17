@@ -1,3 +1,5 @@
+export type NotificationFrequency = "action-only" | "daily" | "every-run";
+
 export interface AgentSettings {
   trustedSenders: string[];
   unsubscribeAfterDays: number;
@@ -5,6 +7,7 @@ export interface AgentSettings {
   useTelegram: boolean;
   telegramBotToken: string;
   telegramChatId: string;
+  notificationFrequency: NotificationFrequency;
 }
 
 export function generateScript(s: AgentSettings): string {
