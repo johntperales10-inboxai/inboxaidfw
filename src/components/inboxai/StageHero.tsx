@@ -121,7 +121,63 @@ export function StageHero({ onStart }: Props) {
           </div>
         </div>
 
-        <div className="mt-20 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Problem section */}
+        <div className="mt-24">
+          <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tight">
+            Your inbox is working against you
+          </h2>
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+            {problems.map((p) => (
+              <div key={p.title} className="p-6 rounded-2xl bg-card border border-border">
+                <div className="text-3xl mb-4">{p.emoji}</div>
+                <h3 className="text-lg font-semibold mb-2">{p.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* How it works */}
+        <div className="mt-24">
+          <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tight">
+            Set it up once. Let it run forever.
+          </h2>
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {steps.map((s) => (
+              <div key={s.n} className="p-6 rounded-2xl bg-card border border-border">
+                <div className="text-5xl font-bold text-primary mb-4">{s.n}</div>
+                <h3 className="text-lg font-semibold mb-2">{s.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* FAQ */}
+        <div className="mt-24 max-w-3xl mx-auto">
+          <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tight">
+            Common questions
+          </h2>
+          <Accordion type="single" collapsible className="mt-10 space-y-3">
+            {faqs.map((f, i) => (
+              <AccordionItem
+                key={i}
+                value={`item-${i}`}
+                className="rounded-2xl bg-card border border-border px-5 data-[state=open]:border-primary/40"
+              >
+                <AccordionTrigger className="text-left text-base font-medium hover:no-underline py-5">
+                  {f.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-5">
+                  {f.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+
+        {/* Features */}
+        <div className="mt-24 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {features.map((f) => (
             <div key={f.title} className="p-6 rounded-2xl bg-card border border-border hover:border-primary/40 transition-colors">
               <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
@@ -132,7 +188,21 @@ export function StageHero({ onStart }: Props) {
             </div>
           ))}
         </div>
+
+        {/* Final CTA */}
+        <div className="mt-24 flex flex-col items-center">
+          <a
+            href="https://johntperales.gumroad.com/l/xypgwz?wanted=true"
+            className="gumroad-button inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/30"
+          >
+            Buy now — $50
+          </a>
+          <p className="mt-3 text-center text-xs text-muted-foreground">
+            After payment, return to this page to set up your agent.
+          </p>
+        </div>
       </div>
     </section>
   );
 }
+
