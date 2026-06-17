@@ -14,6 +14,7 @@ export function StageForm({ onBack, onSubmit }: Props) {
   const [useTelegram, setUseTelegram] = useState(false);
   const [token, setToken] = useState("");
   const [chatId, setChatId] = useState("");
+  const [notificationFrequency, setNotificationFrequency] = useState<NotificationFrequency>("action-only");
   const [error, setError] = useState("");
 
   const updateSender = (i: number, v: string) => {
