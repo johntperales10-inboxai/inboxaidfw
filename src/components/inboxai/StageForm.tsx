@@ -144,6 +144,8 @@ export function StageForm({ onBack, onSubmit }: Props) {
                     />
                   </div>
                 </div>
+              </div>
+            </div>
           </div>
 
           {/* Notification preference */}
@@ -194,7 +196,6 @@ export function StageForm({ onBack, onSubmit }: Props) {
             </div>
           </div>
 
-          </div>
 
           {error && (
             <div className="px-4 py-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive">
