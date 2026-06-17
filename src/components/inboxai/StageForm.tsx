@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Plus, X } from "lucide-react";
-import type { AgentSettings } from "@/lib/generateScript";
+import { ArrowLeft, ArrowRight, Plus, X, Check } from "lucide-react";
+import type { AgentSettings, NotificationFrequency } from "@/lib/generateScript";
 
 interface Props {
   onBack: () => void;
