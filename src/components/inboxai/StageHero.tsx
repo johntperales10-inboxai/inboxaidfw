@@ -1,4 +1,10 @@
 import { ArrowRight, Star, Trash2, Mail, MessageSquare, Check } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface Props {
   onStart: () => void;
@@ -11,6 +17,28 @@ const features = [
   { icon: MessageSquare, title: "Texts you when unsure", desc: "Never guesses. Sends you a Telegram message when it needs your input." },
 ];
 
+const problems = [
+  { emoji: "📧", title: "Important emails get buried", desc: "Emails from people you actually care about disappear under a pile of newsletters and promotions you never asked for." },
+  { emoji: "🗑️", title: "Spam never stops", desc: "You clean it out, it comes back. Every single day. It's a never ending battle you didn't sign up for." },
+  { emoji: "😮‍💨", title: "You're still subscribed to everything", desc: "That newsletter from 2021? Still arriving every Tuesday. You've just learned to ignore it — but it's still eating your time." },
+];
+
+const steps = [
+  { n: "1", title: "Tell it who matters", desc: "Add the email addresses of people you always want to hear from. Family, your boss, close friends." },
+  { n: "2", title: "Set your preferences", desc: "Choose how aggressive you want it to be with spam and newsletters. Takes 2 minutes." },
+  { n: "3", title: "It runs itself", desc: "The agent works in the background every hour. You only hear from it when it needs your input." },
+];
+
+const faqs = [
+  { q: "Is my email safe?", a: "Yes. The agent runs entirely inside your own Google account — nobody else ever sees your emails. It's like hiring an assistant who already works at Google. You can revoke access any time from your Google account settings." },
+  { q: "Do I need to know how to code?", a: "No. The setup wizard builds your custom script automatically. You just copy and paste it into one place and click run. The whole process takes about 5 minutes." },
+  { q: "What if the agent makes a mistake?", a: "The agent never permanently deletes anything. Trashed emails stay in your trash for 30 days so you can always recover them. And if it's unsure about something it asks you first rather than guessing." },
+  { q: "Does it work with any Gmail account?", a: "Yes — any personal Gmail account or Google Workspace account works." },
+  { q: "What happens after I pay?", a: "You get a step by step setup guide immediately after payment. Then come back to this page, fill out the form, copy your custom script, and follow the guide. Most people are up and running in under 10 minutes." },
+  { q: "Can I stop it whenever I want?", a: "Yes. You can pause it instantly by running one function, or fully remove all access from your Google account settings. You are always in complete control." },
+  { q: "Is this really a one time payment?", a: "Yes. $50 once, yours forever. No monthly fees, no subscriptions, no surprises." },
+];
+
 const included = [
   "AI reads and categorizes every email automatically",
   "Stars emails from people you trust",
@@ -20,6 +48,7 @@ const included = [
   "Runs inside your own Google account — completely private",
   "Step by step setup guide included",
 ];
+
 
 export function StageHero({ onStart }: Props) {
   return (
@@ -92,7 +121,63 @@ export function StageHero({ onStart }: Props) {
           </div>
         </div>
 
-        <div className="mt-20 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Problem section */}
+        <div className="mt-24">
+          <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tight">
+            Your inbox is working against you
+          </h2>
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+            {problems.map((p) => (
+              <div key={p.title} className="p-6 rounded-2xl bg-card border border-border">
+                <div className="text-3xl mb-4">{p.emoji}</div>
+                <h3 className="text-lg font-semibold mb-2">{p.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* How it works */}
+        <div className="mt-24">
+          <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tight">
+            Set it up once. Let it run forever.
+          </h2>
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {steps.map((s) => (
+              <div key={s.n} className="p-6 rounded-2xl bg-card border border-border">
+                <div className="text-5xl font-bold text-primary mb-4">{s.n}</div>
+                <h3 className="text-lg font-semibold mb-2">{s.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* FAQ */}
+        <div className="mt-24 max-w-3xl mx-auto">
+          <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tight">
+            Common questions
+          </h2>
+          <Accordion type="single" collapsible className="mt-10 space-y-3">
+            {faqs.map((f, i) => (
+              <AccordionItem
+                key={i}
+                value={`item-${i}`}
+                className="rounded-2xl bg-card border border-border px-5 data-[state=open]:border-primary/40"
+              >
+                <AccordionTrigger className="text-left text-base font-medium hover:no-underline py-5">
+                  {f.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-5">
+                  {f.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+
+        {/* Features */}
+        <div className="mt-24 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {features.map((f) => (
             <div key={f.title} className="p-6 rounded-2xl bg-card border border-border hover:border-primary/40 transition-colors">
               <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
@@ -103,7 +188,21 @@ export function StageHero({ onStart }: Props) {
             </div>
           ))}
         </div>
+
+        {/* Final CTA */}
+        <div className="mt-24 flex flex-col items-center">
+          <a
+            href="https://johntperales.gumroad.com/l/xypgwz?wanted=true"
+            className="gumroad-button inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/30"
+          >
+            Buy now — $50
+          </a>
+          <p className="mt-3 text-center text-xs text-muted-foreground">
+            After payment, return to this page to set up your agent.
+          </p>
+        </div>
       </div>
     </section>
   );
 }
+
