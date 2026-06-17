@@ -80,10 +80,8 @@ export function StageHero({ onStart }: Props) {
               </ul>
 
               <a
-                href="https://johntperales.gumroad.com/l/xypgwz"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-8 w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/30"
+                href="https://johntperales.gumroad.com/l/xypgwz?wanted=true"
+                className="gumroad-button mt-8 w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/30"
               >
                 Buy now — $50
               </a>

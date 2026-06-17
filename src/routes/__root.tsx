@@ -96,6 +96,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" },
       { rel: "stylesheet", href: appCss },
     ],
+    scripts: [
+      { src: "https://gumroad.com/js/gumroad.js", defer: true },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
