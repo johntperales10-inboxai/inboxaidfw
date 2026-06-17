@@ -120,7 +120,11 @@ function sendFlagNotification(flagged, actioned) {
   sendNotification(\`🚩 \${flagged.length} email(s) need your attention\`, \`\${flagged.length} email(s) were flagged:\\n\\n\${lines}\\n\\nThese were NOT touched.\`, \`🚩 \${flagged.length} email(s) flagged:\\n\${lines}\`);
 }
 
-function sendNotification(subject, emailBody, telegramText) {
+function sendNotification(subject, emailBody, telegramText, opts) {
+  const hasFlagged = opts && opts.hasFlagged;
+  const freq = SETTINGS.notificationFrequency || "every-run";
+  if (freq === "action-only" && !hasFlagged) return;
+  if (freq === "daily" && new Date().getHours() !== 8) return;
   try { GmailApp.sendEmail(SETTINGS.notificationEmail, subject, emailBody); } catch (e) {}
   if (SETTINGS.useTelegram && SETTINGS.telegramBotToken !== "PASTE_YOUR_BOT_TOKEN_HERE") {
     try { UrlFetchApp.fetch(\`https://api.telegram.org/bot\${SETTINGS.telegramBotToken}/sendMessage\`, { method: "post", contentType: "application/json", payload: JSON.stringify({ chat_id: SETTINGS.telegramChatId, text: telegramText || subject }), muteHttpExceptions: true }); } catch (e) {}
