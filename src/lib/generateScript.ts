@@ -117,7 +117,7 @@ function clearSpam(actioned) { const s = GmailApp.search("in:spam", 0, SETTINGS.
 
 function sendFlagNotification(flagged, actioned) {
   const lines = flagged.map((e, i) => \`\${i + 1}. From: \${e.from}\\n   "\${e.subject}"\\n   Reason: \${e.reason}\`).join("\\n\\n");
-  sendNotification(\`🚩 \${flagged.length} email(s) need your attention\`, \`\${flagged.length} email(s) were flagged:\\n\\n\${lines}\\n\\nThese were NOT touched.\`, \`🚩 \${flagged.length} email(s) flagged:\\n\${lines}\`);
+  sendNotification(\`🚩 \${flagged.length} email(s) need your attention\`, \`\${flagged.length} email(s) were flagged:\\n\\n\${lines}\\n\\nThese were NOT touched.\`, \`🚩 \${flagged.length} email(s) flagged:\\n\${lines}\`, { hasFlagged: true });
 }
 
 function sendNotification(subject, emailBody, telegramText, opts) {
