@@ -36,6 +36,7 @@ ${senders}
   useTelegram: ${s.useTelegram},
   telegramBotToken: "${token}",
   telegramChatId: "${chatId}",
+  notificationFrequency: "${s.notificationFrequency}",
   batchSize: 20,
   lookbackDays: 3
 };
