@@ -144,8 +144,56 @@ export function StageForm({ onBack, onSubmit }: Props) {
                     />
                   </div>
                 </div>
-              </div>
+          </div>
+
+          {/* Notification preference */}
+          <div>
+            <label className="block text-base font-semibold">Notification preference</label>
+            <p className="text-sm text-muted-foreground mt-1">How often should the agent reach out to you?</p>
+            <div className="mt-4 space-y-3">
+              {([
+                { value: "action-only", label: "Only when action needed", desc: "I'll only contact you when I find something I'm not sure about.", recommended: true },
+                { value: "daily", label: "Daily summary", desc: "I'll send you one message per day with everything I did." },
+                { value: "every-run", label: "Every run", desc: "I'll send you a message every hour (not recommended)." },
+              ] as { value: NotificationFrequency; label: string; desc: string; recommended?: boolean }[]).map((opt) => {
+                const selected = notificationFrequency === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setNotificationFrequency(opt.value)}
+                    className={`w-full text-left flex items-start gap-4 p-4 rounded-xl bg-card border transition-all ${
+                      selected
+                        ? "border-primary ring-1 ring-primary/40 shadow-lg shadow-primary/10"
+                        : opt.recommended
+                          ? "border-primary/40 hover:border-primary/70"
+                          : "border-border hover:border-muted-foreground/40"
+                    }`}
+                  >
+                    <span
+                      className={`mt-0.5 size-5 shrink-0 rounded-full border-2 flex items-center justify-center transition-colors ${
+                        selected ? "border-primary bg-primary" : "border-border"
+                      }`}
+                    >
+                      {selected && <Check className="size-3 text-primary-foreground" strokeWidth={3} />}
+                    </span>
+                    <div className="flex-1">
+                      <div className="font-medium flex items-center gap-2 flex-wrap">
+                        {opt.label}
+                        {opt.recommended && (
+                          <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30">
+                            Recommended
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-sm text-muted-foreground mt-0.5">{opt.desc}</div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
+          </div>
+
           </div>
 
           {error && (
