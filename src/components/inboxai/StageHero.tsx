@@ -63,27 +63,6 @@ function GoogleLogo() {
 }
 
 export function StageHero({ onStart: _onStart }: Props) {
-  const [signingIn, setSigningIn] = useState(false);
-  const [signInError, setSignInError] = useState<string | null>(null);
-
-  const handleGoogleSignIn = async () => {
-    setSignInError(null);
-    setSigningIn(true);
-    try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
-      });
-      if (result.error) {
-        setSignInError(result.error.message || "Sign in failed. Please try again.");
-        setSigningIn(false);
-        return;
-      }
-      // If redirected, browser will navigate away. If tokens returned, parent will detect session.
-    } catch (e) {
-      setSignInError(e instanceof Error ? e.message : "Sign in failed.");
-      setSigningIn(false);
-    }
-  };
 
   return (
     <section className="min-h-screen flex items-center justify-center px-6 py-20">
