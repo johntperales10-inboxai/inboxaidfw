@@ -1,19 +1,21 @@
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Plus, X, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus, X, Check, CheckCircle2 } from "lucide-react";
 import type { AgentSettings, NotificationFrequency } from "@/lib/generateScript";
 
 interface Props {
   onBack: () => void;
   onSubmit: (s: AgentSettings) => void;
+  userEmail?: string | null;
 }
 
-export function StageForm({ onBack, onSubmit }: Props) {
+export function StageForm({ onBack, onSubmit, userEmail }: Props) {
   const [senders, setSenders] = useState<string[]>([""]);
   const [days, setDays] = useState(60);
   const [deleteSpam, setDeleteSpam] = useState(true);
   const [useTelegram, setUseTelegram] = useState(false);
   const [token, setToken] = useState("");
   const [chatId, setChatId] = useState("");
+  const [notificationEmail, setNotificationEmail] = useState(userEmail ?? "");
   const [notificationFrequency, setNotificationFrequency] = useState<NotificationFrequency>("action-only");
   const [error, setError] = useState("");
 
