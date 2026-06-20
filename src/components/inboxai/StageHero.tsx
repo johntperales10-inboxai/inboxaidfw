@@ -109,17 +109,30 @@ export function StageHero({ onStart }: Props) {
               <p className="mt-3 text-center text-xs text-muted-foreground">
                 After payment, return to this page to set up your agent.
               </p>
-            </div>
-            <div className="mt-6 text-center">
+
+              {/* Divider */}
+              <div className="mt-6 flex items-center gap-3" aria-hidden>
+                <span className="h-px flex-1 bg-border" />
+                <span className="text-xs uppercase tracking-wider text-muted-foreground">or</span>
+                <span className="h-px flex-1 bg-border" />
+              </div>
+
               <button
-                onClick={onStart}
-                className="text-sm text-muted-foreground hover:text-primary underline underline-offset-4 transition-colors"
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={signingIn}
+                className="mt-6 w-full inline-flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-white text-[#1f1f1f] font-medium text-sm border border-[#dadce0] hover:bg-[#f8f9fa] transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Already purchased? Click here to set up your agent
+                <GoogleLogo />
+                {signingIn ? "Redirecting…" : "Sign in with Google to get started"}
               </button>
+              {signInError && (
+                <p className="mt-3 text-center text-xs text-destructive">{signInError}</p>
+              )}
             </div>
           </div>
         </div>
+
 
         {/* Problem section */}
         <div className="mt-24">
