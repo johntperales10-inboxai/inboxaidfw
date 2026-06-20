@@ -1,12 +1,11 @@
-import { ArrowRight, Star, Trash2, Mail, MessageSquare, Check } from "lucide-react";
+import { Star, Trash2, Mail, MessageSquare, Check } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { lovable } from "@/integrations/lovable/index";
-import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 
 interface Props {
   onStart: () => void;
@@ -52,39 +51,8 @@ const included = [
 ];
 
 
-function GoogleLogo() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden>
-      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/>
-      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
-      <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.4-4.5 2.3-7.2 2.3-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/>
-      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4.1 5.6l6.2 5.2C41.1 35.6 44 30.3 44 24c0-1.3-.1-2.3-.4-3.5z"/>
-    </svg>
-  );
-}
 
 export function StageHero({ onStart: _onStart }: Props) {
-  const [signingIn, setSigningIn] = useState(false);
-  const [signInError, setSignInError] = useState<string | null>(null);
-
-  const handleGoogleSignIn = async () => {
-    setSignInError(null);
-    setSigningIn(true);
-    try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
-      });
-      if (result.error) {
-        setSignInError(result.error.message || "Sign in failed. Please try again.");
-        setSigningIn(false);
-        return;
-      }
-      // If redirected, browser will navigate away. If tokens returned, parent will detect session.
-    } catch (e) {
-      setSignInError(e instanceof Error ? e.message : "Sign in failed.");
-      setSigningIn(false);
-    }
-  };
 
   return (
     <section className="min-h-screen flex items-center justify-center px-6 py-20">
@@ -143,25 +111,6 @@ export function StageHero({ onStart: _onStart }: Props) {
                 After payment, return to this page to set up your agent.
               </p>
 
-              {/* Divider */}
-              <div className="mt-6 flex items-center gap-3" aria-hidden>
-                <span className="h-px flex-1 bg-border" />
-                <span className="text-xs uppercase tracking-wider text-muted-foreground">or</span>
-                <span className="h-px flex-1 bg-border" />
-              </div>
-
-              <button
-                type="button"
-                onClick={handleGoogleSignIn}
-                disabled={signingIn}
-                className="mt-6 w-full inline-flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-white text-[#1f1f1f] font-medium text-sm border border-[#dadce0] hover:bg-[#f8f9fa] transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                <GoogleLogo />
-                {signingIn ? "Redirecting…" : "Sign in with Google to get started"}
-              </button>
-              {signInError && (
-                <p className="mt-3 text-center text-xs text-destructive">{signInError}</p>
-              )}
             </div>
           </div>
         </div>
@@ -246,6 +195,16 @@ export function StageHero({ onStart: _onStart }: Props) {
           <p className="mt-3 text-center text-xs text-muted-foreground">
             After payment, return to this page to set up your agent.
           </p>
+        </div>
+
+        {/* Discreet sign-in link */}
+        <div className="mt-20 text-center">
+          <Link
+            to="/signin"
+            className="text-xs text-muted-foreground/60 hover:text-muted-foreground underline underline-offset-4"
+          >
+            Already purchased? Click here
+          </Link>
         </div>
       </div>
     </section>
