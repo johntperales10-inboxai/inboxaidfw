@@ -5,6 +5,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { lovable } from "@/integrations/lovable/index";
+import { useState } from "react";
 
 interface Props {
   onStart: () => void;
