@@ -196,6 +196,16 @@ export function StageHero({ onStart: _onStart }: Props) {
             After payment, return to this page to set up your agent.
           </p>
         </div>
+
+        {/* Discreet sign-in link */}
+        <div className="mt-20 text-center">
+          <Link
+            to="/signin"
+            className="text-xs text-muted-foreground/60 hover:text-muted-foreground underline underline-offset-4"
+          >
+            Already purchased? Click here
+          </Link>
+        </div>
       </div>
     </section>
   );
