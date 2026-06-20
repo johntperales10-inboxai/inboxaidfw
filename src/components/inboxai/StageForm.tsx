@@ -52,6 +52,12 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
   return (
     <section className="min-h-screen px-6 py-12">
       <div className="max-w-2xl mx-auto">
+        {userEmail && (
+          <div className="mb-6 flex items-center gap-2 px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm">
+            <CheckCircle2 className="size-4 shrink-0" />
+            <span>Signed in as <span className="font-medium">{userEmail}</span></span>
+          </div>
+        )}
         <button onClick={onBack} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-10">
           <ArrowLeft className="size-4" /> Back
         </button>
