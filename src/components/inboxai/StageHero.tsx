@@ -70,16 +70,6 @@ export function StageHero({ onStart }: Props) {
           A personal AI agent that lives inside your own Google account. It stars emails from people you care about, deletes spam, unsubscribes from newsletters you've forgotten about, and texts you when it finds something it's not sure about.
         </p>
 
-        <div className="mt-12 flex justify-center">
-          <button
-            onClick={onStart}
-            className="group inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/20"
-          >
-            Set up my agent
-            <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
-          </button>
-        </div>
-
         <div className="mt-16 flex justify-center">
           <div className="relative w-full max-w-md">
             <div aria-hidden className="absolute -inset-px rounded-3xl bg-gradient-to-b from-primary/40 via-primary/10 to-transparent blur-xl opacity-60" />
@@ -117,6 +107,14 @@ export function StageHero({ onStart }: Props) {
               <p className="mt-3 text-center text-xs text-muted-foreground">
                 After payment, return to this page to set up your agent.
               </p>
+            </div>
+            <div className="mt-6 text-center">
+              <button
+                onClick={onStart}
+                className="text-sm text-muted-foreground hover:text-primary underline underline-offset-4 transition-colors"
+              >
+                Already purchased? Click here to set up your agent
+              </button>
             </div>
           </div>
         </div>
