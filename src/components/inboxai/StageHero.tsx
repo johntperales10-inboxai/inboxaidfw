@@ -1,12 +1,11 @@
-import { ArrowRight, Star, Trash2, Mail, MessageSquare, Check } from "lucide-react";
+import { Star, Trash2, Mail, MessageSquare, Check } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { lovable } from "@/integrations/lovable/index";
-import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 
 interface Props {
   onStart: () => void;
