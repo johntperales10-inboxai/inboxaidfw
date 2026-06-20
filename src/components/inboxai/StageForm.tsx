@@ -45,6 +45,7 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
       telegramBotToken: token,
       telegramChatId: chatId,
       notificationFrequency,
+      notificationEmail: notificationEmail.trim() || undefined,
     });
   };
 
