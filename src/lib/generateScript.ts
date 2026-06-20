@@ -8,6 +8,7 @@ export interface AgentSettings {
   telegramBotToken: string;
   telegramChatId: string;
   notificationFrequency: NotificationFrequency;
+  notificationEmail?: string;
 }
 
 export function generateScript(s: AgentSettings): string {
@@ -32,7 +33,7 @@ ${senders}
   ],
   deleteSpam: ${s.deleteSpam},
   unsubscribeAfterDays: ${s.unsubscribeAfterDays},
-  notificationEmail: Session.getActiveUser().getEmail(),
+  notificationEmail: ${s.notificationEmail?.trim() ? `"${s.notificationEmail.trim().replace(/"/g, '\\"')}"` : "Session.getActiveUser().getEmail()"},
   useTelegram: ${s.useTelegram},
   telegramBotToken: "${token}",
   telegramChatId: "${chatId}",

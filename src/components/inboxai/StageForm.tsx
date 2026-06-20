@@ -1,19 +1,21 @@
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Plus, X, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus, X, Check, CheckCircle2 } from "lucide-react";
 import type { AgentSettings, NotificationFrequency } from "@/lib/generateScript";
 
 interface Props {
   onBack: () => void;
   onSubmit: (s: AgentSettings) => void;
+  userEmail?: string | null;
 }
 
-export function StageForm({ onBack, onSubmit }: Props) {
+export function StageForm({ onBack, onSubmit, userEmail }: Props) {
   const [senders, setSenders] = useState<string[]>([""]);
   const [days, setDays] = useState(60);
   const [deleteSpam, setDeleteSpam] = useState(true);
   const [useTelegram, setUseTelegram] = useState(false);
   const [token, setToken] = useState("");
   const [chatId, setChatId] = useState("");
+  const [notificationEmail, setNotificationEmail] = useState(userEmail ?? "");
   const [notificationFrequency, setNotificationFrequency] = useState<NotificationFrequency>("action-only");
   const [error, setError] = useState("");
 
@@ -43,12 +45,19 @@ export function StageForm({ onBack, onSubmit }: Props) {
       telegramBotToken: token,
       telegramChatId: chatId,
       notificationFrequency,
+      notificationEmail: notificationEmail.trim() || undefined,
     });
   };
 
   return (
     <section className="min-h-screen px-6 py-12">
       <div className="max-w-2xl mx-auto">
+        {userEmail && (
+          <div className="mb-6 flex items-center gap-2 px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm">
+            <CheckCircle2 className="size-4 shrink-0" />
+            <span>Signed in as <span className="font-medium">{userEmail}</span></span>
+          </div>
+        )}
         <button onClick={onBack} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-10">
           <ArrowLeft className="size-4" /> Back
         </button>
@@ -146,6 +155,19 @@ export function StageForm({ onBack, onSubmit }: Props) {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Notification email */}
+          <div>
+            <label className="block text-base font-semibold">Notification email</label>
+            <p className="text-sm text-muted-foreground mt-1">Where the agent will send alerts when it needs your input.</p>
+            <input
+              type="email"
+              value={notificationEmail}
+              onChange={(e) => setNotificationEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="mt-4 w-full px-4 py-3 rounded-lg bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+            />
           </div>
 
           {/* Notification preference */}
