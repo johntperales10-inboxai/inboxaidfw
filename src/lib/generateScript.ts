@@ -8,6 +8,7 @@ export interface AgentSettings {
   telegramBotToken: string;
   telegramChatId: string;
   notificationFrequency: NotificationFrequency;
+  notificationEmail?: string;
 }
 
 export function generateScript(s: AgentSettings): string {
