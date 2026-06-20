@@ -157,6 +157,19 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
             </div>
           </div>
 
+          {/* Notification email */}
+          <div>
+            <label className="block text-base font-semibold">Notification email</label>
+            <p className="text-sm text-muted-foreground mt-1">Where the agent will send alerts when it needs your input.</p>
+            <input
+              type="email"
+              value={notificationEmail}
+              onChange={(e) => setNotificationEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="mt-4 w-full px-4 py-3 rounded-lg bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+            />
+          </div>
+
           {/* Notification preference */}
           <div>
             <label className="block text-base font-semibold">Notification preference</label>
