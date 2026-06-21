@@ -29,7 +29,7 @@ export function generateScript(s: AgentSettings): string {
 // ============================================================
 
 const SETTINGS = {
-  geminiApiKey: "PASTE_YOUR_GEMINI_API_KEY_HERE",
+  geminiApiKey: "${geminiKey.replace(/"/g, '\\"')}",
   trustedSenders: [
 ${senders}
   ],
