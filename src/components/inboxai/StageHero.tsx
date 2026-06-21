@@ -9,7 +9,7 @@ import {
 import { Link } from "@tanstack/react-router";
 
 const BASE_GUMROAD_URL = "https://johntperales.gumroad.com/l/xypgwz";
-const VALID_CODES = new Set(["FREE"]);
+const VALID_CODES = new Set(["FREEACCESS"]);
 
 interface Props {
   onStart: () => void;
