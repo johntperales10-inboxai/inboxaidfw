@@ -1,6 +1,7 @@
 export type NotificationFrequency = "action-only" | "daily" | "every-run";
 
 export interface AgentSettings {
+  geminiApiKey?: string;
   trustedSenders: string[];
   unsubscribeAfterDays: number;
   deleteSpam: boolean;
@@ -18,6 +19,7 @@ export function generateScript(s: AgentSettings): string {
     .map((e) => `    "${e.replace(/"/g, '\\"')}"`)
     .join(",\n");
 
+  const geminiKey = s.geminiApiKey?.trim() ? s.geminiApiKey.trim() : "PASTE_YOUR_GEMINI_API_KEY_HERE";
   const token = s.useTelegram && s.telegramBotToken.trim() ? s.telegramBotToken.trim() : "PASTE_YOUR_BOT_TOKEN_HERE";
   const chatId = s.useTelegram && s.telegramChatId.trim() ? s.telegramChatId.trim() : "PASTE_YOUR_CHAT_ID_HERE";
 
@@ -27,7 +29,7 @@ export function generateScript(s: AgentSettings): string {
 // ============================================================
 
 const SETTINGS = {
-  geminiApiKey: "PASTE_YOUR_GEMINI_API_KEY_HERE",
+  geminiApiKey: "${geminiKey.replace(/"/g, '\\"')}",
   trustedSenders: [
 ${senders}
   ],
