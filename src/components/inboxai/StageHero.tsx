@@ -125,15 +125,57 @@ export function StageHero({ onStart: _onStart }: Props) {
                 ))}
               </ul>
 
+              {appliedCode && (
+                <div className="mt-8 px-4 py-2.5 rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 text-sm text-center">
+                  ✓ Discount applied — your order is free!
+                </div>
+              )}
+
               <a
-                href="https://johntperales.gumroad.com/l/xypgwz?wanted=true"
-                className="gumroad-button mt-8 w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/30"
+                href={buyUrl}
+                className={`gumroad-button ${appliedCode ? "mt-3" : "mt-8"} w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/30`}
               >
-                Buy now — $50
+                {buyLabel}
               </a>
               <p className="mt-3 text-center text-xs text-muted-foreground">
                 After payment, return to this page to set up your agent.
               </p>
+
+              {/* Discount code */}
+              <div className="mt-6 pt-5 border-t border-border/50">
+                <label className="block text-xs text-muted-foreground mb-2">
+                  Have a discount code?
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={discountCode}
+                    onChange={(e) => {
+                      setDiscountCode(e.target.value);
+                      if (codeError) setCodeError(null);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleApplyCode();
+                      }
+                    }}
+                    placeholder="Enter code"
+                    className="flex-1 min-w-0 px-3 py-2 rounded-md bg-background border border-border text-sm focus:outline-none focus:border-primary/50 placeholder:text-muted-foreground/60"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyCode}
+                    className="px-4 py-2 rounded-md border border-border bg-card text-sm font-medium hover:border-primary/40 hover:text-primary transition-colors"
+                  >
+                    Apply
+                  </button>
+                </div>
+                {codeError && (
+                  <p className="mt-2 text-xs text-red-400">{codeError}</p>
+                )}
+              </div>
+
 
             </div>
           </div>
