@@ -62,7 +62,7 @@ export function StageScript({ script, onBack }: Props) {
               onClick={copy}
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity"
             >
-              {copied ? <><Check className="size-3.5" /> Copied</> : <><Copy className="size-3.5" /> Copy script</>}
+              {copied ? <><Check className="size-3.5" /> Copied</> : <><Copy className="size-3.5" /> Copy my ready-to-use script</>}
             </button>
           </div>
           <pre className="overflow-x-auto p-5 text-xs leading-relaxed font-mono text-foreground/90 max-h-[480px]">
