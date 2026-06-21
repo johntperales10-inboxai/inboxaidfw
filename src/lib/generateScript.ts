@@ -1,6 +1,7 @@
 export type NotificationFrequency = "action-only" | "daily" | "every-run";
 
 export interface AgentSettings {
+  geminiApiKey?: string;
   trustedSenders: string[];
   unsubscribeAfterDays: number;
   deleteSpam: boolean;
