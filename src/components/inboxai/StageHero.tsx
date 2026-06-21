@@ -78,6 +78,7 @@ export function StageHero({ onStart: _onStart }: Props) {
     : `${BASE_GUMROAD_URL}?wanted=true`;
   const buyLabel = appliedCode ? "Claim free access" : "Buy now — $50";
 
+  return (
     <section className="min-h-screen flex items-center justify-center px-6 py-20">
       <div className="max-w-5xl w-full mx-auto">
         <div className="flex justify-center mb-8">
