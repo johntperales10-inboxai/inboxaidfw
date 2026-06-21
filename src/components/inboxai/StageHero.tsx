@@ -57,8 +57,27 @@ const included = [
 
 
 export function StageHero({ onStart: _onStart }: Props) {
+  const [discountCode, setDiscountCode] = useState("");
+  const [appliedCode, setAppliedCode] = useState<string | null>(null);
+  const [codeError, setCodeError] = useState<string | null>(null);
 
-  return (
+  const handleApplyCode = () => {
+    const code = discountCode.trim().toUpperCase();
+    if (!code) return;
+    if (VALID_CODES.has(code)) {
+      setAppliedCode(code);
+      setCodeError(null);
+    } else {
+      setAppliedCode(null);
+      setCodeError("Invalid code — try again");
+    }
+  };
+
+  const buyUrl = appliedCode
+    ? `${BASE_GUMROAD_URL}/${appliedCode}?wanted=true`
+    : `${BASE_GUMROAD_URL}?wanted=true`;
+  const buyLabel = appliedCode ? "Claim free access" : "Buy now — $50";
+
     <section className="min-h-screen flex items-center justify-center px-6 py-20">
       <div className="max-w-5xl w-full mx-auto">
         <div className="flex justify-center mb-8">
