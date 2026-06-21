@@ -253,10 +253,10 @@ export function StageHero({ onStart: _onStart }: Props) {
         {/* Final CTA */}
         <div className="mt-24 flex flex-col items-center">
           <a
-            href="https://johntperales.gumroad.com/l/xypgwz?wanted=true"
+            href={buyUrl}
             className="gumroad-button inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/30"
           >
-            Buy now — $50
+            {buyLabel}
           </a>
           <p className="mt-3 text-center text-xs text-muted-foreground">
             After payment, return to this page to set up your agent.
