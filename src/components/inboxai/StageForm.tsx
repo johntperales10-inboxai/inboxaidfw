@@ -9,6 +9,7 @@ interface Props {
 }
 
 export function StageForm({ onBack, onSubmit, userEmail }: Props) {
+  const [geminiApiKey, setGeminiApiKey] = useState("");
   const [senders, setSenders] = useState<string[]>([""]);
   const [days, setDays] = useState(60);
   const [deleteSpam, setDeleteSpam] = useState(true);
