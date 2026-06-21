@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Star, Trash2, Mail, MessageSquare, Check } from "lucide-react";
 import {
   Accordion,
@@ -6,6 +7,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Link } from "@tanstack/react-router";
+
+const BASE_GUMROAD_URL = "https://johntperales.gumroad.com/l/xypgwz";
+const VALID_CODES = new Set(["FREE"]);
 
 interface Props {
   onStart: () => void;
