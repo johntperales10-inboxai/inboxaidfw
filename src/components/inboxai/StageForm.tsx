@@ -39,6 +39,7 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
     }
     setError("");
     onSubmit({
+      geminiApiKey: geminiApiKey.trim() || undefined,
       trustedSenders: cleaned,
       unsubscribeAfterDays: days,
       deleteSpam,
