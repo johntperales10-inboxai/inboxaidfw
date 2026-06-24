@@ -19,7 +19,7 @@ const features = [
   { icon: Star, title: "Stars important emails", desc: "AI reads every email and decides if it's from a real person who matters to you." },
   { icon: Trash2, title: "Clears spam automatically", desc: "Empties your spam folder into trash so it never piles up again." },
   { icon: Mail, title: "Unsubscribes for you", desc: "Finds newsletters you haven't opened in months and unsubscribes automatically." },
-  { icon: MessageSquare, title: "Texts you when unsure", desc: "Never guesses. Sends you a Telegram message when it needs your input." },
+  { icon: MessageSquare, title: "Email alerts when unsure", desc: "Get a simple email summary when the agent finds something it needs your help with.", emoji: "💌" },
 ];
 
 const problems = [
