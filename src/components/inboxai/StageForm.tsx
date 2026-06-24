@@ -13,9 +13,6 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
   const [senders, setSenders] = useState<string[]>([""]);
   const [days, setDays] = useState(60);
   const [deleteSpam, setDeleteSpam] = useState(true);
-  const [useTelegram, setUseTelegram] = useState(false);
-  const [token, setToken] = useState("");
-  const [chatId, setChatId] = useState("");
   const [notificationEmail, setNotificationEmail] = useState(userEmail ?? "");
   const [notificationFrequency, setNotificationFrequency] = useState<NotificationFrequency>("action-only");
   const [error, setError] = useState("");
@@ -43,9 +40,6 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
       trustedSenders: cleaned,
       unsubscribeAfterDays: days,
       deleteSpam,
-      useTelegram,
-      telegramBotToken: token,
-      telegramChatId: chatId,
       notificationFrequency,
       notificationEmail: notificationEmail.trim() || undefined,
     });
