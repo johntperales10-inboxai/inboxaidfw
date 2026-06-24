@@ -265,11 +265,14 @@ export function StageHero({ onStart: _onStart }: Props) {
 
         {/* Discreet sign-in link */}
         <div className="mt-20 text-center">
+          <p className="text-xs text-primary mb-1.5">
+            Purchased? Your next step is here ↓
+          </p>
           <Link
             to="/signin"
-            className="text-xs text-muted-foreground/60 hover:text-muted-foreground underline underline-offset-4"
+            className="text-xs text-white hover:text-white/80 underline underline-offset-4"
           >
-            Already purchased? Click here
+            Already purchased? Set up my agent
           </Link>
         </div>
       </div>
