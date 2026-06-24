@@ -142,38 +142,6 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
               checked={deleteSpam}
               onChange={setDeleteSpam}
             />
-            <ToggleRow
-              label="Telegram notifications"
-              desc="Get a message when the agent needs your input"
-              checked={useTelegram}
-              onChange={setUseTelegram}
-            />
-            <div
-              className={`grid transition-all duration-300 ease-out ${useTelegram ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
-            >
-              <div className="overflow-hidden">
-                <div className="pt-3 space-y-3 pl-4 border-l-2 border-primary/40">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Telegram bot token</label>
-                    <input
-                      value={token}
-                      onChange={(e) => setToken(e.target.value)}
-                      placeholder="123456:ABCdef..."
-                      className="w-full px-4 py-3 rounded-lg bg-input border border-border focus:outline-none focus:border-primary transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Your Telegram chat ID</label>
-                    <input
-                      value={chatId}
-                      onChange={(e) => setChatId(e.target.value)}
-                      placeholder="987654321"
-                      className="w-full px-4 py-3 rounded-lg bg-input border border-border focus:outline-none focus:border-primary transition-colors"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Notification email */}
