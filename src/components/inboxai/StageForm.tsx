@@ -62,26 +62,25 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
         <p className="mt-4 text-muted-foreground">Takes 2 minutes. We'll build your custom script with your settings already filled in.</p>
 
         <div className="mt-12 space-y-10">
-          {/* Gemini API Key */}
+          {/* Step 1 — Gemini API Key */}
           <div>
-            <label className="block text-base font-semibold">Your AI Key</label>
-            <p className="text-sm text-muted-foreground mt-1">This powers the AI brain of your agent. Getting one is free and takes about 60 seconds.</p>
+            <label className="block text-base font-semibold">Step 1 — Get your free AI key</label>
             <a
               href="https://aistudio.google.com"
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 inline-flex items-center gap-2 px-5 py-3 rounded-lg border-2 border-primary text-primary font-semibold hover:bg-primary/10 transition-colors"
             >
-              Get my free AI key →
+              Get my free Gemini key →
             </a>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-              Once you're there: Sign in with Google → Click <span className="text-foreground font-medium">Get API Key</span> → Click <span className="text-foreground font-medium">Create API key</span> → Copy it → Come back here and paste it below
+              Sign in with Google → Click Get API Key → Click Create API key → Copy the key → Come back and paste it below
             </p>
             <input
               type="text"
               value={geminiApiKey}
               onChange={(e) => setGeminiApiKey(e.target.value)}
-              placeholder="Paste your Gemini API key here — starts with AIzaSy..."
+              placeholder="Paste your Gemini key here — starts with AIzaSy..."
               className="mt-4 w-full px-4 py-3 rounded-lg bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors font-mono text-sm"
             />
           </div>
