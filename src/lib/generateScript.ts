@@ -5,9 +5,6 @@ export interface AgentSettings {
   trustedSenders: string[];
   unsubscribeAfterDays: number;
   deleteSpam: boolean;
-  useTelegram: boolean;
-  telegramBotToken: string;
-  telegramChatId: string;
   notificationFrequency: NotificationFrequency;
   notificationEmail?: string;
 }
@@ -20,8 +17,6 @@ export function generateScript(s: AgentSettings): string {
     .join(",\n");
 
   const geminiKey = s.geminiApiKey?.trim() ? s.geminiApiKey.trim() : "PASTE_YOUR_GEMINI_API_KEY_HERE";
-  const token = s.useTelegram && s.telegramBotToken.trim() ? s.telegramBotToken.trim() : "PASTE_YOUR_BOT_TOKEN_HERE";
-  const chatId = s.useTelegram && s.telegramChatId.trim() ? s.telegramChatId.trim() : "PASTE_YOUR_CHAT_ID_HERE";
 
   return `// ============================================================
 //  GMAIL AI AGENT — your custom build
@@ -36,9 +31,6 @@ ${senders}
   deleteSpam: ${s.deleteSpam},
   unsubscribeAfterDays: ${s.unsubscribeAfterDays},
   notificationEmail: ${s.notificationEmail?.trim() ? `"${s.notificationEmail.trim().replace(/"/g, '\\"')}"` : "Session.getActiveUser().getEmail()"},
-  useTelegram: ${s.useTelegram},
-  telegramBotToken: "${token}",
-  telegramChatId: "${chatId}",
   notificationFrequency: "${s.notificationFrequency}",
   batchSize: 20,
   lookbackDays: 3
@@ -77,7 +69,7 @@ REASON: [one sentence]\`;
 function setupTrigger() {
   ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t));
   ScriptApp.newTrigger("runAgent").timeBased().everyHours(1).create();
-  sendNotification("✅ Gmail Agent active!", "Your Gmail AI Agent is running.", "✅ Gmail AI Agent is live!");
+  sendNotification("✅ Gmail Agent active!", "Your Gmail AI Agent is running.");
   Logger.log("Agent activated.");
 }
 
@@ -120,18 +112,15 @@ function clearSpam(actioned) { const s = GmailApp.search("in:spam", 0, SETTINGS.
 
 function sendFlagNotification(flagged, actioned) {
   const lines = flagged.map((e, i) => \`\${i + 1}. From: \${e.from}\\n   "\${e.subject}"\\n   Reason: \${e.reason}\`).join("\\n\\n");
-  sendNotification(\`🚩 \${flagged.length} email(s) need your attention\`, \`\${flagged.length} email(s) were flagged:\\n\\n\${lines}\\n\\nThese were NOT touched.\`, \`🚩 \${flagged.length} email(s) flagged:\\n\${lines}\`, { hasFlagged: true });
+  sendNotification(\`🚩 \${flagged.length} email(s) need your attention\`, \`\${flagged.length} email(s) were flagged:\\n\\n\${lines}\\n\\nThese were NOT touched.\`, { hasFlagged: true });
 }
 
-function sendNotification(subject, emailBody, telegramText, opts) {
+function sendNotification(subject, emailBody, opts) {
   const hasFlagged = opts && opts.hasFlagged;
   const freq = SETTINGS.notificationFrequency || "every-run";
   if (freq === "action-only" && !hasFlagged) return;
   if (freq === "daily" && new Date().getHours() !== 8) return;
   try { GmailApp.sendEmail(SETTINGS.notificationEmail, subject, emailBody); } catch (e) {}
-  if (SETTINGS.useTelegram && SETTINGS.telegramBotToken !== "PASTE_YOUR_BOT_TOKEN_HERE") {
-    try { UrlFetchApp.fetch(\`https://api.telegram.org/bot\${SETTINGS.telegramBotToken}/sendMessage\`, { method: "post", contentType: "application/json", payload: JSON.stringify({ chat_id: SETTINGS.telegramChatId, text: telegramText || subject }), muteHttpExceptions: true }); } catch (e) {}
-  }
 }
 
 function extractEmail(f) { const m = f.match(/<(.+?)>/); return m ? m[1].toLowerCase() : f.toLowerCase().trim(); }
@@ -140,7 +129,6 @@ function getUnsubscribeUrl(msg) { try { const m = msg.getRawContent().match(/Lis
 function attemptUnsubscribe(url) { try { const r = UrlFetchApp.fetch(url, { method: "get", followRedirects: true, muteHttpExceptions: true }); return r.getResponseCode() < 400; } catch (e) { return false; } }
 
 function testGemini() { Logger.log(JSON.stringify(askGemini("newsletter@example.com", "Example", "Weekly digest", "Top stories this week..."))); }
-function testTelegram() { SETTINGS.useTelegram = true; sendNotification("🤖 Test", "Test email.", "🤖 Telegram connected!"); }
 function showMemory() { Logger.log(Memory.summarize()); }
 function forgetSender() { Memory.forget("email@example.com"); }
 function resetMemory() { Memory.reset(); }
