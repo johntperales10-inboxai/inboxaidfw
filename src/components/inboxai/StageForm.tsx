@@ -13,9 +13,6 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
   const [senders, setSenders] = useState<string[]>([""]);
   const [days, setDays] = useState(60);
   const [deleteSpam, setDeleteSpam] = useState(true);
-  const [useTelegram, setUseTelegram] = useState(false);
-  const [token, setToken] = useState("");
-  const [chatId, setChatId] = useState("");
   const [notificationEmail, setNotificationEmail] = useState(userEmail ?? "");
   const [notificationFrequency, setNotificationFrequency] = useState<NotificationFrequency>("action-only");
   const [error, setError] = useState("");
@@ -43,9 +40,6 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
       trustedSenders: cleaned,
       unsubscribeAfterDays: days,
       deleteSpam,
-      useTelegram,
-      telegramBotToken: token,
-      telegramChatId: chatId,
       notificationFrequency,
       notificationEmail: notificationEmail.trim() || undefined,
     });
@@ -68,26 +62,25 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
         <p className="mt-4 text-muted-foreground">Takes 2 minutes. We'll build your custom script with your settings already filled in.</p>
 
         <div className="mt-12 space-y-10">
-          {/* Gemini API Key */}
+          {/* Step 1 — Gemini API Key */}
           <div>
-            <label className="block text-base font-semibold">Your AI Key</label>
-            <p className="text-sm text-muted-foreground mt-1">This powers the AI brain of your agent. Getting one is free and takes about 60 seconds.</p>
+            <label className="block text-base font-semibold">Step 1 — Get your free AI key</label>
             <a
               href="https://aistudio.google.com"
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 inline-flex items-center gap-2 px-5 py-3 rounded-lg border-2 border-primary text-primary font-semibold hover:bg-primary/10 transition-colors"
             >
-              Get my free AI key →
+              Get my free Gemini key →
             </a>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-              Once you're there: Sign in with Google → Click <span className="text-foreground font-medium">Get API Key</span> → Click <span className="text-foreground font-medium">Create API key</span> → Copy it → Come back here and paste it below
+              Sign in with Google → Click Get API Key → Click Create API key → Copy the key → Come back and paste it below
             </p>
             <input
               type="text"
               value={geminiApiKey}
               onChange={(e) => setGeminiApiKey(e.target.value)}
-              placeholder="Paste your Gemini API key here — starts with AIzaSy..."
+              placeholder="Paste your Gemini key here — starts with AIzaSy..."
               className="mt-4 w-full px-4 py-3 rounded-lg bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors font-mono text-sm"
             />
           </div>
@@ -149,38 +142,6 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
               checked={deleteSpam}
               onChange={setDeleteSpam}
             />
-            <ToggleRow
-              label="Telegram notifications"
-              desc="Get a message when the agent needs your input"
-              checked={useTelegram}
-              onChange={setUseTelegram}
-            />
-            <div
-              className={`grid transition-all duration-300 ease-out ${useTelegram ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
-            >
-              <div className="overflow-hidden">
-                <div className="pt-3 space-y-3 pl-4 border-l-2 border-primary/40">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Telegram bot token</label>
-                    <input
-                      value={token}
-                      onChange={(e) => setToken(e.target.value)}
-                      placeholder="123456:ABCdef..."
-                      className="w-full px-4 py-3 rounded-lg bg-input border border-border focus:outline-none focus:border-primary transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Your Telegram chat ID</label>
-                    <input
-                      value={chatId}
-                      onChange={(e) => setChatId(e.target.value)}
-                      placeholder="987654321"
-                      className="w-full px-4 py-3 rounded-lg bg-input border border-border focus:outline-none focus:border-primary transition-colors"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Notification email */}
