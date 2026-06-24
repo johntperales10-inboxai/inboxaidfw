@@ -49,7 +49,7 @@ const included = [
   "Stars emails from people you trust",
   "Clears spam every hour",
   "Unsubscribes from newsletters you've forgotten",
-  "Telegram or email alerts when it needs your input",
+  "Email alerts when it needs your input",
   "Runs inside your own Google account — completely private",
   "Step by step setup guide included",
 ];
