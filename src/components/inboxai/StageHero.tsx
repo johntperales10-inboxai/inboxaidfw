@@ -251,6 +251,8 @@ export function StageHero({ onStart: _onStart }: Props) {
           ))}
         </div>
 
+        <Reviews />
+
         {/* Final CTA */}
         <div className="mt-24 flex flex-col items-center">
           <a
