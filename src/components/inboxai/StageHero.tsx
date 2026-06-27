@@ -6,6 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Reviews } from "./Reviews";
 import { Link } from "@tanstack/react-router";
 
 const BASE_GUMROAD_URL = "https://johntperales.gumroad.com/l/xypgwz";
