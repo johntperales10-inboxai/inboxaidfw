@@ -13,7 +13,7 @@ export const Route = createFileRoute("/")({
       { title: "InboxAI — Your Gmail inbox, managed by AI" },
       { name: "description", content: "A personal AI agent that lives inside your own Google account. Stars important emails, deletes spam, and unsubscribes you from forgotten newsletters." },
       { property: "og:title", content: "InboxAI — Your Gmail inbox, managed by AI" },
-      { property: "og:description", content: "A personal AI agent that lives inside your own Google account." },
+      { property: "og:description", content: "A personal AI agent that lives inside your own Google account. Stars important emails, deletes spam, and unsubscribes you from forgotten newsletters." },
     ],
   }),
   component: Index,
