@@ -153,5 +153,50 @@ function showMemory() { Logger.log(Memory.summarize()); }
 function forgetSender() { Memory.forget("email@example.com"); }
 function resetMemory() { Memory.reset(); }
 function stopAgent() { ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t)); Logger.log("Agent stopped."); }
+
+function checkForReplies() {
+  const threads = GmailApp.search('subject:"🚩 Gmail Agent" is:unread from:me', 0, 10);
+  if (threads.length === 0) return;
+  for (const thread of threads) {
+    for (const msg of thread.getMessages()) {
+      if (!msg.isUnread()) continue;
+      if (msg.getFrom().toLowerCase().indexOf(Session.getActiveUser().getEmail().toLowerCase()) === -1) continue;
+      const body = msg.getPlainBody().toUpperCase();
+      const commands = parseCommands(body);
+      if (commands.length === 0) { msg.markRead(); continue; }
+      const stored = getPendingFlagged();
+      if (!stored || !stored.length) { msg.markRead(); continue; }
+      const results = [];
+      for (const cmd of commands) {
+        const index = cmd.number - 1;
+        if (index < 0 || index >= stored.length) { results.push("⚠️ Email " + cmd.number + " not found"); continue; }
+        const flagged = stored[index];
+        try {
+          const emailThread = GmailApp.getThreadById(flagged.threadId);
+          if (!emailThread) { results.push("⚠️ Email " + cmd.number + " could not be found"); continue; }
+          switch (cmd.action) {
+            case "TRASH": emailThread.moveToTrash(); Memory.remember(flagged.senderEmail, "TRASH", "Trashed by reply"); results.push("🗑️ Trashed email " + cmd.number); break;
+            case "STAR": emailThread.getMessages().forEach(m => m.star()); Memory.remember(flagged.senderEmail, "STAR", "Starred by reply"); results.push("⭐ Starred email " + cmd.number); break;
+            case "UNSUB": const url = getUnsubscribeUrl(emailThread.getMessages().slice(-1)[0]); if (url && attemptUnsubscribe(url)) { emailThread.moveToTrash(); Memory.remember(flagged.senderEmail, "UNSUB", "Unsubscribed by reply"); results.push("📧 Unsubscribed from email " + cmd.number); } else { results.push("⚠️ Could not unsubscribe from email " + cmd.number); } break;
+            case "IGNORE": Memory.remember(flagged.senderEmail, "FLAG", "Ignored by user"); results.push("✋ Ignored email " + cmd.number); break;
+          }
+        } catch(err) { results.push("❌ Error on email " + cmd.number + ": " + err.message); }
+      }
+      msg.markRead();
+      GmailApp.sendEmail(SETTINGS.notificationEmail, "✅ Gmail Agent: Commands processed", "Your agent processed your reply:\\n\\n" + results.join("\\n") + "\\n\\n— Your Gmail AI Agent");
+      clearPendingFlagged();
+    }
+  }
+}
+
+function parseCommands(text) {
+  const commands = []; const pattern = /(TRASH|STAR|UNSUB|IGNORE)\\s+(\\d+)/g; let match;
+  while ((match = pattern.exec(text)) !== null) { commands.push({ action: match[1], number: parseInt(match[2]) }); }
+  return commands;
+}
+
+function storePendingFlagged(flagged) { PropertiesService.getScriptProperties().setProperty("pendingFlagged", JSON.stringify(flagged)); }
+function getPendingFlagged() { const raw = PropertiesService.getScriptProperties().getProperty("pendingFlagged"); return raw ? JSON.parse(raw) : []; }
+function clearPendingFlagged() { PropertiesService.getScriptProperties().deleteProperty("pendingFlagged"); }
 `;
 }
