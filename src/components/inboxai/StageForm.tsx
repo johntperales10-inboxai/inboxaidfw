@@ -11,6 +11,7 @@ interface Props {
 export function StageForm({ onBack, onSubmit, userEmail }: Props) {
   const [geminiApiKey, setGeminiApiKey] = useState("");
   const [senders, setSenders] = useState<string[]>([""]);
+  const [trustedDomains, setTrustedDomains] = useState<string[]>([""]);
   const [days, setDays] = useState(60);
   const [deleteSpam, setDeleteSpam] = useState(true);
   const [notificationEmail, setNotificationEmail] = useState(userEmail ?? "");
@@ -21,6 +22,12 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
     const next = [...senders];
     next[i] = v;
     setSenders(next);
+  };
+
+  const updateDomain = (i: number, v: string) => {
+    const next = [...trustedDomains];
+    next[i] = v;
+    setTrustedDomains(next);
   };
 
   const handleSubmit = () => {
@@ -34,10 +41,12 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
       setError(`"${invalid}" doesn't look like a valid email.`);
       return;
     }
+    const domains = trustedDomains.map((d) => d.trim()).filter(Boolean);
     setError("");
     onSubmit({
       geminiApiKey: geminiApiKey.trim() || undefined,
       trustedSenders: cleaned,
+      trustedDomains: domains,
       unsubscribeAfterDays: days,
       deleteSpam,
       notificationFrequency,
@@ -83,6 +92,38 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
               placeholder="Paste your Gemini key here — starts with AIzaSy..."
               className="mt-4 w-full px-4 py-3 rounded-lg bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors font-mono text-sm"
             />
+          </div>
+
+          {/* Star entire organizations */}
+          <div>
+            <label className="block text-base font-semibold">Star emails from entire organizations</label>
+            <p className="text-sm text-muted-foreground mt-1">Type an email ending and every email from that organization will automatically be starred — for example @mycompany.com or @myschool.edu</p>
+            <div className="mt-4 space-y-2">
+              {trustedDomains.map((d, i) => (
+                <div key={i} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={d}
+                    onChange={(e) => updateDomain(i, e.target.value)}
+                    placeholder="@organization.com"
+                    className="flex-1 px-4 py-3 rounded-lg bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+                  />
+                  <button
+                    onClick={() => setTrustedDomains(trustedDomains.length === 1 ? [""] : trustedDomains.filter((_, j) => j !== i))}
+                    className="size-12 flex items-center justify-center rounded-lg bg-card border border-border hover:border-destructive hover:text-destructive transition-colors"
+                    aria-label="Remove"
+                  >
+                    <X className="size-4" />
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() => setTrustedDomains([...trustedDomains, ""])}
+                className="inline-flex items-center gap-2 text-sm text-primary hover:opacity-80 transition-opacity mt-2"
+              >
+                <Plus className="size-4" /> Add organization
+              </button>
+            </div>
           </div>
 
           {/* Trusted senders */}
