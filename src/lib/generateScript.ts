@@ -3,6 +3,7 @@ export type NotificationFrequency = "action-only" | "daily" | "every-run";
 export interface AgentSettings {
   geminiApiKey?: string;
   trustedSenders: string[];
+  trustedDomains?: string[];
   unsubscribeAfterDays: number;
   deleteSpam: boolean;
   notificationFrequency: NotificationFrequency;
@@ -16,7 +17,15 @@ export function generateScript(s: AgentSettings): string {
     .map((e) => `    "${e.replace(/"/g, '\\"')}"`)
     .join(",\n");
 
+  const domains = (s.trustedDomains || [])
+    .map((d) => d.trim())
+    .filter(Boolean)
+    .map((d) => `    "${d.replace(/"/g, '\\"')}"`)
+    .join(",\n");
+
   const geminiKey = s.geminiApiKey?.trim() ? s.geminiApiKey.trim() : "PASTE_YOUR_GEMINI_API_KEY_HERE";
+
+  const trustedDomainsLiteral = domains.length > 0 ? `[\n${domains}\n  ]` : "[]";
 
   return `// ============================================================
 //  GMAIL AI AGENT — your custom build
@@ -28,6 +37,7 @@ const SETTINGS = {
   trustedSenders: [
 ${senders}
   ],
+  trustedDomains: ${trustedDomainsLiteral},
   deleteSpam: ${s.deleteSpam},
   unsubscribeAfterDays: ${s.unsubscribeAfterDays},
   notificationEmail: ${s.notificationEmail?.trim() ? `"${s.notificationEmail.trim().replace(/"/g, '\\"')}"` : "Session.getActiveUser().getEmail()"},
@@ -107,7 +117,12 @@ function processTrustedSenders(actioned) {
   });
 }
 
-function isTrustedSender(email) { return SETTINGS.trustedSenders.some(t => email.toLowerCase().includes(t.toLowerCase())); }
+function isTrustedSender(email) {
+  const individualMatch = SETTINGS.trustedSenders.some(t => email.toLowerCase().includes(t.toLowerCase()));
+  const domainMatch = SETTINGS.trustedDomains.some(d => email.toLowerCase().endsWith(d.toLowerCase()));
+  return individualMatch || domainMatch;
+}
+
 function clearSpam(actioned) { const s = GmailApp.search("in:spam", 0, SETTINGS.batchSize); if (s.length) { GmailApp.moveThreadsToTrash(s); actioned.push(\`🗑️ Trashed \${s.length} spam threads\`); } }
 
 function sendFlagNotification(flagged, actioned) {
