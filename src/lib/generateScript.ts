@@ -129,8 +129,10 @@ function isTrustedSender(email) {
 function clearSpam(actioned) { const s = GmailApp.search("in:spam", 0, SETTINGS.batchSize); if (s.length) { GmailApp.moveThreadsToTrash(s); actioned.push(\`🗑️ Trashed \${s.length} spam threads\`); } }
 
 function sendFlagNotification(flagged, actioned) {
+  storePendingFlagged(flagged);
   const lines = flagged.map((e, i) => \`\${i + 1}. From: \${e.from}\\n   "\${e.subject}"\\n   Reason: \${e.reason}\`).join("\\n\\n");
-  sendNotification(\`🚩 \${flagged.length} email(s) need your attention\`, \`\${flagged.length} email(s) were flagged:\\n\\n\${lines}\\n\\nThese were NOT touched.\`, { hasFlagged: true });
+  const instructions = "HOW TO HANDLE THESE EMAILS:\\nJust reply to this email with simple commands:\\nTRASH 1 — trash email number 1\\nSTAR 2 — star email number 2\\nUNSUB 3 — unsubscribe from email number 3\\nIGNORE 1 — leave email 1 alone\\nYou can combine them: TRASH 1, UNSUB 2, STAR 3\\nThe agent will process your reply within the hour and send you a confirmation.";
+  sendNotification(\`🚩 \${flagged.length} email(s) need your attention\`, \`\${flagged.length} email(s) were flagged:\\n\\n\${lines}\\n\\nThese were NOT touched.\\n\\n\${instructions}\`, { hasFlagged: true });
 }
 
 function sendNotification(subject, emailBody, opts) {
