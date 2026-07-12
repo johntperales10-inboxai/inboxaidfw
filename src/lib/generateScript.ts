@@ -42,6 +42,7 @@ ${senders}
   unsubscribeAfterDays: ${s.unsubscribeAfterDays},
   notificationEmail: ${s.notificationEmail?.trim() ? `"${s.notificationEmail.trim().replace(/"/g, '\\"')}"` : "Session.getActiveUser().getEmail()"},
   notificationFrequency: "${s.notificationFrequency}",
+  replyCommands: true,
   batchSize: 20,
   lookbackDays: 3
 };
