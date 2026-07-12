@@ -85,6 +85,7 @@ function setupTrigger() {
 }
 
 function runAgent() {
+  checkForReplies();
   const flagged = [], actioned = [];
   processTrustedSenders(actioned);
   if (SETTINGS.deleteSpam) clearSpam(actioned);
@@ -98,15 +99,16 @@ function runAgent() {
     if (isTrustedSender(senderEmail)) continue;
     let decision = Memory.recall(senderEmail);
     if (!decision) { decision = askGemini(senderEmail, extractName(senderFull), msg.getSubject() || "(no subject)", msg.getPlainBody().substring(0, 300)); Memory.remember(senderEmail, decision.action, decision.reason); }
+    const subject = msg.getSubject();
     switch (decision.action) {
-      case "STAR": msg.star(); actioned.push(\`⭐ Starred: "\${msg.getSubject()}"\`); break;
-      case "TRASH": thread.moveToTrash(); actioned.push(\`🗑️ Trashed: "\${msg.getSubject()}"\`); break;
+      case "STAR": msg.star(); actioned.push(\`⭐ Starred: "\${subject}"\`); break;
+      case "TRASH": thread.moveToTrash(); actioned.push(\`🗑️ Trashed: "\${subject}"\`); break;
       case "UNSUB":
         const url = getUnsubscribeUrl(msg);
         if (url && attemptUnsubscribe(url)) { thread.moveToTrash(); actioned.push(\`📧 Unsubscribed: \${senderEmail}\`); }
-        else flagged.push({ from: senderFull, subject: msg.getSubject(), reason: "Unsubscribe failed — manual action needed" });
+        else flagged.push({ from: senderFull, subject: subject, reason: "Unsubscribe failed — manual action needed", threadId: thread.getId(), senderEmail: senderEmail });
         break;
-      default: flagged.push({ from: senderFull, subject: msg.getSubject(), reason: decision.reason });
+      default: flagged.push({ from: senderFull, subject: subject, reason: decision.reason, threadId: thread.getId(), senderEmail: senderEmail });
     }
   }
   if (flagged.length) sendFlagNotification(flagged, actioned);
