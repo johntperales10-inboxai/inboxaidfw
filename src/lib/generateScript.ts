@@ -42,6 +42,7 @@ ${senders}
   unsubscribeAfterDays: ${s.unsubscribeAfterDays},
   notificationEmail: ${s.notificationEmail?.trim() ? `"${s.notificationEmail.trim().replace(/"/g, '\\"')}"` : "Session.getActiveUser().getEmail()"},
   notificationFrequency: "${s.notificationFrequency}",
+  replyCommands: true,
   batchSize: 20,
   lookbackDays: 3
 };
@@ -84,6 +85,7 @@ function setupTrigger() {
 }
 
 function runAgent() {
+  checkForReplies();
   const flagged = [], actioned = [];
   processTrustedSenders(actioned);
   if (SETTINGS.deleteSpam) clearSpam(actioned);
@@ -97,15 +99,16 @@ function runAgent() {
     if (isTrustedSender(senderEmail)) continue;
     let decision = Memory.recall(senderEmail);
     if (!decision) { decision = askGemini(senderEmail, extractName(senderFull), msg.getSubject() || "(no subject)", msg.getPlainBody().substring(0, 300)); Memory.remember(senderEmail, decision.action, decision.reason); }
+    const subject = msg.getSubject();
     switch (decision.action) {
-      case "STAR": msg.star(); actioned.push(\`⭐ Starred: "\${msg.getSubject()}"\`); break;
-      case "TRASH": thread.moveToTrash(); actioned.push(\`🗑️ Trashed: "\${msg.getSubject()}"\`); break;
+      case "STAR": msg.star(); actioned.push(\`⭐ Starred: "\${subject}"\`); break;
+      case "TRASH": thread.moveToTrash(); actioned.push(\`🗑️ Trashed: "\${subject}"\`); break;
       case "UNSUB":
         const url = getUnsubscribeUrl(msg);
         if (url && attemptUnsubscribe(url)) { thread.moveToTrash(); actioned.push(\`📧 Unsubscribed: \${senderEmail}\`); }
-        else flagged.push({ from: senderFull, subject: msg.getSubject(), reason: "Unsubscribe failed — manual action needed" });
+        else flagged.push({ from: senderFull, subject: subject, reason: "Unsubscribe failed — manual action needed", threadId: thread.getId(), senderEmail: senderEmail });
         break;
-      default: flagged.push({ from: senderFull, subject: msg.getSubject(), reason: decision.reason });
+      default: flagged.push({ from: senderFull, subject: subject, reason: decision.reason, threadId: thread.getId(), senderEmail: senderEmail });
     }
   }
   if (flagged.length) sendFlagNotification(flagged, actioned);
@@ -126,8 +129,10 @@ function isTrustedSender(email) {
 function clearSpam(actioned) { const s = GmailApp.search("in:spam", 0, SETTINGS.batchSize); if (s.length) { GmailApp.moveThreadsToTrash(s); actioned.push(\`🗑️ Trashed \${s.length} spam threads\`); } }
 
 function sendFlagNotification(flagged, actioned) {
+  storePendingFlagged(flagged);
   const lines = flagged.map((e, i) => \`\${i + 1}. From: \${e.from}\\n   "\${e.subject}"\\n   Reason: \${e.reason}\`).join("\\n\\n");
-  sendNotification(\`🚩 \${flagged.length} email(s) need your attention\`, \`\${flagged.length} email(s) were flagged:\\n\\n\${lines}\\n\\nThese were NOT touched.\`, { hasFlagged: true });
+  const instructions = "HOW TO HANDLE THESE EMAILS:\\nJust reply to this email with simple commands:\\nTRASH 1 — trash email number 1\\nSTAR 2 — star email number 2\\nUNSUB 3 — unsubscribe from email number 3\\nIGNORE 1 — leave email 1 alone\\nYou can combine them: TRASH 1, UNSUB 2, STAR 3\\nThe agent will process your reply within the hour and send you a confirmation.";
+  sendNotification(\`🚩 \${flagged.length} email(s) need your attention\`, \`\${flagged.length} email(s) were flagged:\\n\\n\${lines}\\n\\nThese were NOT touched.\\n\\n\${instructions}\`, { hasFlagged: true });
 }
 
 function sendNotification(subject, emailBody, opts) {
@@ -148,5 +153,50 @@ function showMemory() { Logger.log(Memory.summarize()); }
 function forgetSender() { Memory.forget("email@example.com"); }
 function resetMemory() { Memory.reset(); }
 function stopAgent() { ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t)); Logger.log("Agent stopped."); }
+
+function checkForReplies() {
+  const threads = GmailApp.search('subject:"🚩 Gmail Agent" is:unread from:me', 0, 10);
+  if (threads.length === 0) return;
+  for (const thread of threads) {
+    for (const msg of thread.getMessages()) {
+      if (!msg.isUnread()) continue;
+      if (msg.getFrom().toLowerCase().indexOf(Session.getActiveUser().getEmail().toLowerCase()) === -1) continue;
+      const body = msg.getPlainBody().toUpperCase();
+      const commands = parseCommands(body);
+      if (commands.length === 0) { msg.markRead(); continue; }
+      const stored = getPendingFlagged();
+      if (!stored || !stored.length) { msg.markRead(); continue; }
+      const results = [];
+      for (const cmd of commands) {
+        const index = cmd.number - 1;
+        if (index < 0 || index >= stored.length) { results.push("⚠️ Email " + cmd.number + " not found"); continue; }
+        const flagged = stored[index];
+        try {
+          const emailThread = GmailApp.getThreadById(flagged.threadId);
+          if (!emailThread) { results.push("⚠️ Email " + cmd.number + " could not be found"); continue; }
+          switch (cmd.action) {
+            case "TRASH": emailThread.moveToTrash(); Memory.remember(flagged.senderEmail, "TRASH", "Trashed by reply"); results.push("🗑️ Trashed email " + cmd.number); break;
+            case "STAR": emailThread.getMessages().forEach(m => m.star()); Memory.remember(flagged.senderEmail, "STAR", "Starred by reply"); results.push("⭐ Starred email " + cmd.number); break;
+            case "UNSUB": const url = getUnsubscribeUrl(emailThread.getMessages().slice(-1)[0]); if (url && attemptUnsubscribe(url)) { emailThread.moveToTrash(); Memory.remember(flagged.senderEmail, "UNSUB", "Unsubscribed by reply"); results.push("📧 Unsubscribed from email " + cmd.number); } else { results.push("⚠️ Could not unsubscribe from email " + cmd.number); } break;
+            case "IGNORE": Memory.remember(flagged.senderEmail, "FLAG", "Ignored by user"); results.push("✋ Ignored email " + cmd.number); break;
+          }
+        } catch(err) { results.push("❌ Error on email " + cmd.number + ": " + err.message); }
+      }
+      msg.markRead();
+      GmailApp.sendEmail(SETTINGS.notificationEmail, "✅ Gmail Agent: Commands processed", "Your agent processed your reply:\\n\\n" + results.join("\\n") + "\\n\\n— Your Gmail AI Agent");
+      clearPendingFlagged();
+    }
+  }
+}
+
+function parseCommands(text) {
+  const commands = []; const pattern = /(TRASH|STAR|UNSUB|IGNORE)\\s+(\\d+)/g; let match;
+  while ((match = pattern.exec(text)) !== null) { commands.push({ action: match[1], number: parseInt(match[2]) }); }
+  return commands;
+}
+
+function storePendingFlagged(flagged) { PropertiesService.getScriptProperties().setProperty("pendingFlagged", JSON.stringify(flagged)); }
+function getPendingFlagged() { const raw = PropertiesService.getScriptProperties().getProperty("pendingFlagged"); return raw ? JSON.parse(raw) : []; }
+function clearPendingFlagged() { PropertiesService.getScriptProperties().deleteProperty("pendingFlagged"); }
 `;
 }
