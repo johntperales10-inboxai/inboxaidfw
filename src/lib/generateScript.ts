@@ -43,6 +43,7 @@ ${senders}
   notificationEmail: ${s.notificationEmail?.trim() ? `"${s.notificationEmail.trim().replace(/"/g, '\\"')}"` : "Session.getActiveUser().getEmail()"},
   notificationFrequency: "${s.notificationFrequency}",
   replyCommands: true,
+  autoStarRealPeople: true,
   batchSize: 20,
   lookbackDays: 3
 };
@@ -62,7 +63,25 @@ function askGemini(senderEmail, senderName, subject, snippet) {
 From: \${senderName} <\${senderEmail}>
 Subject: \${subject}
 Preview: \${snippet}
-Rules: STAR=personal/important, TRASH=junk/scam, UNSUB=newsletter/marketing, FLAG=unsure
+MOST IMPORTANT RULE: Before anything else, determine if this email was sent by a real human person writing directly to the recipient, or by a company, organization, automated system, newsletter, bot, or marketing tool.
+Signs it is a REAL PERSON:
+- Written in a conversational natural tone
+- Addresses the recipient by name or personally
+- Comes from a personal email address like gmail.com, yahoo.com, hotmail.com, outlook.com, icloud.com
+- Has imperfect grammar, casual language, or personal details
+- Feels like one human writing to another human
+- Is a reply to something the recipient sent
+- Mentions specific personal details like names, places, events
+
+Signs it is NOT a real person:
+- Comes from a company domain with words like noreply, info, support, newsletter, hello, team, admin, marketing, deals, offers, updates, notifications
+- Contains promotional language like limited time offer, unsubscribe, click here, shop now, your order, your account
+- Has perfect formatting with images, logos, or HTML layout
+- Is clearly automated like a receipt, shipping update, password reset, or system notification
+- Sent from a business name not a personal name
+
+If the email is from a REAL PERSON always return STAR regardless of the subject or content. A real human reaching out to you is always more important than any other rule. Never trash or unsub a real person's email.
+Other rules: STAR=personal/important, TRASH=junk/scam, UNSUB=newsletter/marketing, FLAG=unsure
 Reply ONLY:
 DECISION: [STAR|TRASH|UNSUB|FLAG]
 REASON: [one sentence]\`;
@@ -96,10 +115,16 @@ function runAgent() {
     const msg = msgs[msgs.length - 1];
     const senderFull = msg.getFrom();
     const senderEmail = extractEmail(senderFull);
+    const subject = msg.getSubject() || "(no subject)";
+    const snippet = msg.getPlainBody().substring(0, 300);
     if (isTrustedSender(senderEmail)) continue;
+    if (isRealPerson(senderEmail, subject, snippet)) {
+      msg.star();
+      actioned.push("⭐ Auto-starred real person: " + senderEmail);
+      continue;
+    }
     let decision = Memory.recall(senderEmail);
-    if (!decision) { decision = askGemini(senderEmail, extractName(senderFull), msg.getSubject() || "(no subject)", msg.getPlainBody().substring(0, 300)); Memory.remember(senderEmail, decision.action, decision.reason); }
-    const subject = msg.getSubject();
+    if (!decision) { decision = askGemini(senderEmail, extractName(senderFull), subject, snippet); Memory.remember(senderEmail, decision.action, decision.reason); }
     switch (decision.action) {
       case "STAR": msg.star(); actioned.push(\`⭐ Starred: "\${subject}"\`); break;
       case "TRASH": thread.moveToTrash(); actioned.push(\`🗑️ Trashed: "\${subject}"\`); break;
@@ -124,6 +149,17 @@ function isTrustedSender(email) {
   const individualMatch = SETTINGS.trustedSenders.some(t => email.toLowerCase().includes(t.toLowerCase()));
   const domainMatch = SETTINGS.trustedDomains.some(d => email.toLowerCase().endsWith(d.toLowerCase()));
   return individualMatch || domainMatch;
+}
+
+function isRealPerson(senderEmail, subject, snippet) {
+  if (!SETTINGS.autoStarRealPeople) return false;
+  const personalDomains = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com", "aol.com", "msn.com", "live.com", "me.com", "mac.com", "protonmail.com", "icloud.com"];
+  const domain = senderEmail.split("@")[1]?.toLowerCase() || "";
+  const isPersonalDomain = personalDomains.some(d => domain === d);
+  const noReplyPatterns = ["noreply", "no-reply", "donotreply", "do-not-reply", "newsletter", "marketing", "support", "info@", "hello@", "team@", "admin@", "notifications@", "updates@", "deals@", "offers@", "mailer@", "automated@"];
+  const isAutomated = noReplyPatterns.some(p => senderEmail.toLowerCase().includes(p));
+  if (isPersonalDomain && !isAutomated) return true;
+  return false;
 }
 
 function clearSpam(actioned) { const s = GmailApp.search("in:spam", 0, SETTINGS.batchSize); if (s.length) { GmailApp.moveThreadsToTrash(s); actioned.push(\`🗑️ Trashed \${s.length} spam threads\`); } }
