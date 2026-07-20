@@ -115,10 +115,16 @@ function runAgent() {
     const msg = msgs[msgs.length - 1];
     const senderFull = msg.getFrom();
     const senderEmail = extractEmail(senderFull);
+    const subject = msg.getSubject() || "(no subject)";
+    const snippet = msg.getPlainBody().substring(0, 300);
     if (isTrustedSender(senderEmail)) continue;
+    if (isRealPerson(senderEmail, subject, snippet)) {
+      msg.star();
+      actioned.push("⭐ Auto-starred real person: " + senderEmail);
+      continue;
+    }
     let decision = Memory.recall(senderEmail);
-    if (!decision) { decision = askGemini(senderEmail, extractName(senderFull), msg.getSubject() || "(no subject)", msg.getPlainBody().substring(0, 300)); Memory.remember(senderEmail, decision.action, decision.reason); }
-    const subject = msg.getSubject();
+    if (!decision) { decision = askGemini(senderEmail, extractName(senderFull), subject, snippet); Memory.remember(senderEmail, decision.action, decision.reason); }
     switch (decision.action) {
       case "STAR": msg.star(); actioned.push(\`⭐ Starred: "\${subject}"\`); break;
       case "TRASH": thread.moveToTrash(); actioned.push(\`🗑️ Trashed: "\${subject}"\`); break;
