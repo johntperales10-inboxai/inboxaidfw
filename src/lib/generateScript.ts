@@ -151,6 +151,17 @@ function isTrustedSender(email) {
   return individualMatch || domainMatch;
 }
 
+function isRealPerson(senderEmail, subject, snippet) {
+  if (!SETTINGS.autoStarRealPeople) return false;
+  const personalDomains = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com", "aol.com", "msn.com", "live.com", "me.com", "mac.com", "protonmail.com", "icloud.com"];
+  const domain = senderEmail.split("@")[1]?.toLowerCase() || "";
+  const isPersonalDomain = personalDomains.some(d => domain === d);
+  const noReplyPatterns = ["noreply", "no-reply", "donotreply", "do-not-reply", "newsletter", "marketing", "support", "info@", "hello@", "team@", "admin@", "notifications@", "updates@", "deals@", "offers@", "mailer@", "automated@"];
+  const isAutomated = noReplyPatterns.some(p => senderEmail.toLowerCase().includes(p));
+  if (isPersonalDomain && !isAutomated) return true;
+  return false;
+}
+
 function clearSpam(actioned) { const s = GmailApp.search("in:spam", 0, SETTINGS.batchSize); if (s.length) { GmailApp.moveThreadsToTrash(s); actioned.push(\`🗑️ Trashed \${s.length} spam threads\`); } }
 
 function sendFlagNotification(flagged, actioned) {
