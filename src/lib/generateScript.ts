@@ -63,7 +63,25 @@ function askGemini(senderEmail, senderName, subject, snippet) {
 From: \${senderName} <\${senderEmail}>
 Subject: \${subject}
 Preview: \${snippet}
-Rules: STAR=personal/important, TRASH=junk/scam, UNSUB=newsletter/marketing, FLAG=unsure
+MOST IMPORTANT RULE: Before anything else, determine if this email was sent by a real human person writing directly to the recipient, or by a company, organization, automated system, newsletter, bot, or marketing tool.
+Signs it is a REAL PERSON:
+- Written in a conversational natural tone
+- Addresses the recipient by name or personally
+- Comes from a personal email address like gmail.com, yahoo.com, hotmail.com, outlook.com, icloud.com
+- Has imperfect grammar, casual language, or personal details
+- Feels like one human writing to another human
+- Is a reply to something the recipient sent
+- Mentions specific personal details like names, places, events
+
+Signs it is NOT a real person:
+- Comes from a company domain with words like noreply, info, support, newsletter, hello, team, admin, marketing, deals, offers, updates, notifications
+- Contains promotional language like limited time offer, unsubscribe, click here, shop now, your order, your account
+- Has perfect formatting with images, logos, or HTML layout
+- Is clearly automated like a receipt, shipping update, password reset, or system notification
+- Sent from a business name not a personal name
+
+If the email is from a REAL PERSON always return STAR regardless of the subject or content. A real human reaching out to you is always more important than any other rule. Never trash or unsub a real person's email.
+Other rules: STAR=personal/important, TRASH=junk/scam, UNSUB=newsletter/marketing, FLAG=unsure
 Reply ONLY:
 DECISION: [STAR|TRASH|UNSUB|FLAG]
 REASON: [one sentence]\`;
