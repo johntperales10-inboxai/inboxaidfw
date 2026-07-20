@@ -43,6 +43,7 @@ ${senders}
   notificationEmail: ${s.notificationEmail?.trim() ? `"${s.notificationEmail.trim().replace(/"/g, '\\"')}"` : "Session.getActiveUser().getEmail()"},
   notificationFrequency: "${s.notificationFrequency}",
   replyCommands: true,
+  autoStarRealPeople: true,
   batchSize: 20,
   lookbackDays: 3
 };
