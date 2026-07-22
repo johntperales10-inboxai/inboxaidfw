@@ -128,7 +128,7 @@ export function StageHero({ onStart: _onStart }: Props) {
 
               {appliedCode && (
                 <div className="mt-8 px-4 py-2.5 rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 text-sm text-center">
-                  ✓ Discount applied — your order is free!
+                  ✓ Discount applied — your access is free!
                 </div>
               )}
 
