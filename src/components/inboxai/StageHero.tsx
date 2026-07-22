@@ -63,20 +63,20 @@ export function StageHero({ onStart: _onStart }: Props) {
   const [codeError, setCodeError] = useState<string | null>(null);
 
   const handleApplyCode = () => {
-    const code = discountCode.trim().toUpperCase();
+    const code = discountCode.replace(/\s/g, "").toUpperCase();
     if (!code) return;
     if (VALID_CODES.has(code)) {
       setAppliedCode(code);
       setCodeError(null);
     } else {
       setAppliedCode(null);
-      setCodeError("Invalid code — try again");
+      setCodeError("Invalid code — please try again");
     }
   };
 
   const buyUrl = appliedCode
-    ? `${BASE_GUMROAD_URL}/${appliedCode}`
-    : `${BASE_GUMROAD_URL}?wanted=true`;
+    ? "https://johntperales.gumroad.com/l/xypgwz/FREEACCESS"
+    : "https://johntperales.gumroad.com/l/xypgwz";
   const buyLabel = appliedCode ? "Claim free access" : "Buy now — $50";
 
   return (
