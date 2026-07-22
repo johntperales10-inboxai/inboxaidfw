@@ -9,8 +9,8 @@ import {
 import { Reviews } from "./Reviews";
 import { Link } from "@tanstack/react-router";
 
-const BASE_GUMROAD_URL = "https://johnperales.gumroad.com/l/xypgwz";
-const VALID_CODES = new Set(["FREE"]);
+const BASE_GUMROAD_URL = "https://johntperales.gumroad.com/l/xypgwz";
+const VALID_CODES = new Set(["FREEACCESS"]);
 
 interface Props {
   onStart: () => void;
@@ -63,20 +63,20 @@ export function StageHero({ onStart: _onStart }: Props) {
   const [codeError, setCodeError] = useState<string | null>(null);
 
   const handleApplyCode = () => {
-    const code = discountCode.trim().toUpperCase();
+    const code = discountCode.replace(/\s/g, "").toUpperCase();
     if (!code) return;
     if (VALID_CODES.has(code)) {
       setAppliedCode(code);
       setCodeError(null);
     } else {
       setAppliedCode(null);
-      setCodeError("Invalid code — try again");
+      setCodeError("Invalid code — please try again");
     }
   };
 
   const buyUrl = appliedCode
-    ? `${BASE_GUMROAD_URL}/${appliedCode}`
-    : `${BASE_GUMROAD_URL}?wanted=true`;
+    ? "https://johntperales.gumroad.com/l/xypgwz/FREEACCESS"
+    : "https://johntperales.gumroad.com/l/xypgwz";
   const buyLabel = appliedCode ? "Claim free access" : "Buy now — $50";
 
   return (
@@ -128,7 +128,7 @@ export function StageHero({ onStart: _onStart }: Props) {
 
               {appliedCode && (
                 <div className="mt-8 px-4 py-2.5 rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 text-sm text-center">
-                  ✓ Discount applied — your order is free!
+                  ✓ Discount applied — your access is free!
                 </div>
               )}
 
