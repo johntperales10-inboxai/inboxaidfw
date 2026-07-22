@@ -42,7 +42,10 @@ export default defineTool({
       .describe("Email address to send summaries to. Defaults to the Google account running the script."),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
-  handler: async (input) => {
+  handler: async (input, ctx) => {
+    if (!ctx.isAuthenticated()) {
+      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    }
     const script = generateScript({
       geminiApiKey: input.geminiApiKey,
       trustedSenders: input.trustedSenders ?? [],

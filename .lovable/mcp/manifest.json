@@ -3,7 +3,11 @@
   "sdk_version": "0.23.0",
   "path": "/mcp",
   "auth": {
-    "type": "none"
+    "type": "oauth",
+    "issuer": "https://ukhdsaxoqgoeqwaioxir.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
   },
   "mcp": {
     "server": {
@@ -15,7 +19,7 @@
       {
         "name": "list_reviews",
         "title": "List customer reviews",
-        "description": "Return public customer reviews for the InboxAI Gmail agent product, newest first.",
+        "description": "Return customer reviews for the InboxAI Gmail agent product, newest first.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -38,7 +42,7 @@
       {
         "name": "submit_review",
         "title": "Submit a review",
-        "description": "Post a new public customer review for the InboxAI Gmail agent product.",
+        "description": "Post a new customer review for the InboxAI Gmail agent product.",
         "annotations": {
           "readOnlyHint": false,
           "destructiveHint": false,
