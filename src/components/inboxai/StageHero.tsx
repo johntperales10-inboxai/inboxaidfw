@@ -95,7 +95,7 @@ export function StageHero({ onStart: _onStart }: Props) {
         </h1>
 
         <p className="mt-8 text-center text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          A personal AI agent that lives inside your own Google account. It stars emails from people you care about, deletes spam, unsubscribes from newsletters you've forgotten about, and texts you when it finds something it's not sure about.
+          A personal AI agent that lives inside your own Google account. It stars emails from people you care about, deletes spam, unsubscribes from newsletters you've forgotten about, and emails you when it finds something it's not sure about.
         </p>
 
         <div className="mt-16 flex justify-center">
