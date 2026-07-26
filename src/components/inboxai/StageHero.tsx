@@ -70,7 +70,7 @@ export function StageHero({ onStart: _onStart }: Props) {
       setCodeError(null);
     } else {
       setAppliedCode(null);
-      setCodeError("Invalid code — please try again");
+      setCodeError("Invalid code — please try again.");
     }
   };
 
