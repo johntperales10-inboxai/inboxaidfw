@@ -54,15 +54,35 @@ export function Reviews() {
   const [thanks, setThanks] = useState(false);
 
   useEffect(() => {
-    supabase
-      .from("reviews")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setReviews((data as Review[]) ?? []);
-        setLoading(false);
-      });
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error: selErr } = await supabase
+          .from("reviews")
+          .select("id, first_name, rating, body, created_at")
+          .order("created_at", { ascending: false })
+          .limit(60);
+        if (cancelled) return;
+        if (selErr) {
+          console.error("Failed to load reviews", selErr);
+          setReviews([]);
+        } else {
+          setReviews((data as Review[]) ?? []);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          console.error("Failed to load reviews", err);
+          setReviews([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
