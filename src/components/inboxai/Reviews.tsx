@@ -44,7 +44,7 @@ const MAX = 300;
 
 export function Reviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
+
 
   const [firstName, setFirstName] = useState("");
   const [rating, setRating] = useState(0);
@@ -74,9 +74,8 @@ export function Reviews() {
           console.error("Failed to load reviews", err);
           setReviews([]);
         }
-      } finally {
-        if (!cancelled) setLoading(false);
       }
+
     })();
     return () => {
       cancelled = true;
@@ -125,10 +124,8 @@ export function Reviews() {
       <p className="mt-3 text-center text-muted-foreground">Real reviews from real people</p>
 
       <div className="mt-10">
-        {loading ? (
-          <p className="text-center text-sm text-muted-foreground">Loading reviews…</p>
-        ) : reviews.length === 0 ? (
-          <p className="text-center text-muted-foreground">Be the first to leave a review!</p>
+        {reviews.length === 0 ? (
+          <p className="text-center text-muted-foreground">No reviews yet — be the first!</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {reviews.map((r) => (
