@@ -4,7 +4,7 @@ import type { AgentSettings, NotificationFrequency } from "@/lib/generateScript"
 
 interface Props {
   onBack: () => void;
-  onSubmit: (s: AgentSettings) => void;
+  onSubmit: (s: AgentSettings) => string | void;
   userEmail?: string | null;
 }
 
