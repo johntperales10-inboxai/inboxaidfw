@@ -169,7 +169,8 @@ export function StageHero({ onStart: _onStart }: Props) {
                   <button
                     type="button"
                     onClick={handleApplyCode}
-                    className="px-4 py-2 rounded-md border border-border bg-card text-sm font-medium hover:border-primary/40 hover:text-primary transition-colors"
+                    className="h-11 px-4 rounded-md border border-border bg-card text-sm font-medium hover:border-primary/40 hover:text-primary transition-colors"
+
                   >
                     Apply
                   </button>
