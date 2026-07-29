@@ -60,12 +60,15 @@ function Index() {
     }
   }, [user, purchase, stage, hasAutoAdvanced]);
 
-  const handleBuild = (s: AgentSettings) => {
-    if (purchase !== "verified") return;
+  const handleBuild = (s: AgentSettings): string | void => {
+    if (purchase !== "verified") {
+      return "We could not verify your purchase. Please make sure you signed in with the same Google account you used to buy on Gumroad. If you need help email johntperales10@gmail.com";
+    }
     setScript(generateScript(s));
     setStage(3);
     window.scrollTo({ top: 0, behavior: "instant" });
   };
+
 
   const go = (s: 1 | 2 | 3) => {
     setStage(s);
