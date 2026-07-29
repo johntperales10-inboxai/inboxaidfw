@@ -43,7 +43,7 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
     }
     const domains = trustedDomains.map((d) => d.trim()).filter(Boolean);
     setError("");
-    onSubmit({
+    const result = onSubmit({
       geminiApiKey: geminiApiKey.trim() || undefined,
       trustedSenders: cleaned,
       trustedDomains: domains,
@@ -52,7 +52,9 @@ export function StageForm({ onBack, onSubmit, userEmail }: Props) {
       notificationFrequency,
       notificationEmail: notificationEmail.trim() || undefined,
     });
+    if (typeof result === "string" && result) setError(result);
   };
+
 
   return (
     <section className="min-h-screen px-6 py-12">
