@@ -161,13 +161,16 @@ export function StageHero({ onStart: _onStart }: Props) {
                         handleApplyCode();
                       }
                     }}
-                    placeholder="Enter code"
-                    className="flex-1 min-w-0 px-3 py-2 rounded-md bg-background border border-border text-sm focus:outline-none focus:border-primary/50 placeholder:text-muted-foreground/60"
+                    placeholder="Enter code here"
+                    aria-label="Discount code"
+                    className="flex-1 min-w-0 h-11 px-3 rounded-md bg-background border-2 border-border text-sm text-foreground focus:outline-none focus:border-primary placeholder:text-muted-foreground"
+
                   />
                   <button
                     type="button"
                     onClick={handleApplyCode}
-                    className="px-4 py-2 rounded-md border border-border bg-card text-sm font-medium hover:border-primary/40 hover:text-primary transition-colors"
+                    className="h-11 px-4 rounded-md border border-border bg-card text-sm font-medium hover:border-primary/40 hover:text-primary transition-colors"
+
                   >
                     Apply
                   </button>
