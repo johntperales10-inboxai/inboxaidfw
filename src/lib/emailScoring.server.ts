@@ -1,25 +1,9 @@
+import type { EmailInput, EmailScore } from "@/lib/emailTypes";
+
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const MODEL = "google/gemini-3.5-flash";
 
-export interface EmailInput {
-  id: string;
-  sender: string;
-  senderEmail: string;
-  subject: string;
-  preview: string;
-  receivedAt: string;
-}
-
-export interface EmailScore {
-  id: string;
-  importanceScore: number;
-  section: "now" | "today" | "this-week" | "waiting" | "read-later" | "archive";
-  explanation: string;
-  actionRequired: boolean;
-  waitingStatus: "needs-my-reply" | "waiting-on-them" | "no-action";
-  deadlineDetected: boolean;
-  deadlineText: string | null;
-}
+export type { EmailInput, EmailScore };
 
 const PERSONAL_DOMAINS = [
   "gmail.com", "yahoo.com", "hotmail.com", "outlook.com",
