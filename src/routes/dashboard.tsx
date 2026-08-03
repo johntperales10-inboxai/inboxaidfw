@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { checkMyPremium } from "@/lib/purchases.functions";
 import { scoreEmails } from "@/lib/dashboard.functions";
 import { fetchUnreadEmails, type GmailEmail } from "@/lib/gmail";
-import type { EmailScore } from "@/lib/emailScoring.server";
+import type { EmailScore } from "@/lib/emailTypes";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
