@@ -38,7 +38,7 @@ export function NavMenu() {
         onClick={() => setOpen((o) => !o)}
         className="size-11 rounded-xl border border-border bg-card/90 backdrop-blur flex items-center justify-center text-foreground hover:border-primary/50 hover:text-primary transition-colors shadow-lg"
       >
-        {open ? <Menu className="size-5" /> : <Menu className="size-5" />}
+        {open ? <X className="size-5" /> : <Menu className="size-5" />}
       </button>
 
       {open && (
