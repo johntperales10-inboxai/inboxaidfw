@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { scoreEmailBatch, type EmailInput, type EmailScore } from "@/lib/emailTypes";
+import { scoreEmailBatch } from "@/lib/emailScoring.server";
+import type { EmailInput, EmailScore } from "@/lib/emailTypes";
 
 export const scoreEmails = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
