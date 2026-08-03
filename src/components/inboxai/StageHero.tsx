@@ -80,7 +80,7 @@ export function StageHero({ onStart: _onStart }: Props) {
   const buyLabel = appliedCode ? "Claim free access" : "Buy now — $50";
 
   return (
-    <section className="min-h-screen flex items-center justify-center px-6 py-20">
+    <section id="top" className="min-h-screen flex items-center justify-center px-6 py-20">
       <div className="max-w-5xl w-full mx-auto">
         <div className="flex justify-center mb-8">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-card/50 text-xs text-muted-foreground">
@@ -98,7 +98,7 @@ export function StageHero({ onStart: _onStart }: Props) {
           A personal AI agent that lives inside your own Google account. It stars emails from people you care about, deletes spam, unsubscribes from newsletters you've forgotten about, and emails you when it finds something it's not sure about.
         </p>
 
-        <div className="mt-16 flex justify-center">
+        <div id="pricing" className="mt-16 flex justify-center scroll-mt-20">
           <div className="relative w-full max-w-md">
             <div aria-hidden className="absolute -inset-px rounded-3xl bg-gradient-to-b from-primary/40 via-primary/10 to-transparent blur-xl opacity-60" />
             <div className="relative rounded-3xl border border-primary/30 bg-card/80 backdrop-blur p-8 shadow-2xl shadow-primary/10">
@@ -203,7 +203,7 @@ export function StageHero({ onStart: _onStart }: Props) {
         </div>
 
         {/* How it works */}
-        <div className="mt-24">
+        <div id="how-it-works" className="mt-24 scroll-mt-20">
           <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tight">
             Set it up once. Let it run forever.
           </h2>
@@ -254,7 +254,9 @@ export function StageHero({ onStart: _onStart }: Props) {
           ))}
         </div>
 
-        <Reviews />
+        <div id="reviews" className="scroll-mt-20">
+          <Reviews />
+        </div>
 
         {/* Final CTA */}
         <div className="mt-24 flex flex-col items-center">
