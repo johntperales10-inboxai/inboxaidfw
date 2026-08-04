@@ -12,12 +12,8 @@
     "format": "prettier --write ."
   },
   "overrides": {
-    "seroval": "^1.6.2",
-    "seroval-plugins": "^1.6.2"
-  },
-  "resolutions": {
-    "seroval": "^1.6.2",
-    "seroval-plugins": "^1.6.2"
+    "seroval": "1.6.2",
+    "seroval-plugins": "1.6.2"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
