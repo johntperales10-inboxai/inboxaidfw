@@ -272,7 +272,50 @@ export function StageHero({ onStart: _onStart }: Props) {
           </p>
         </div>
 
+        {/* Premium banner */}
+        <div className="mt-24 relative">
+          <div aria-hidden className="absolute -inset-1 rounded-3xl bg-primary/20 blur-2xl opacity-50" />
+          <div className="relative w-full rounded-3xl border border-primary/60 bg-card p-8 sm:p-10 shadow-xl shadow-primary/10">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-semibold tracking-widest">
+              NEW
+            </span>
+            <h2 className="mt-4 text-2xl sm:text-3xl font-bold tracking-tight">
+              Introducing InboxAI Premium
+            </h2>
+            <p className="mt-3 text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl">
+              Everything in Basic plus a full Priority Dashboard that organizes your entire inbox by AI
+              importance scores. See exactly what needs your attention today.
+            </p>
+            <ul className="mt-6 space-y-2.5">
+              {[
+                "AI importance scores for every email",
+                "Priority Dashboard with 6 intelligent sections",
+                "Real person detection and deadline alerts",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm text-foreground/90">
+                  <span className="text-primary">✦</span>
+                  <span className="leading-relaxed">{item}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8">
+              <Link
+                to="/premium"
+                className="inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/30"
+              >
+                Learn more about Premium →
+              </Link>
+              <p className="mt-3 text-xs text-muted-foreground">One time payment — $97</p>
+            </div>
+          </div>
+        </div>
+
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          Questions? Email inboxaidfw@gmail.com
+        </p>
+
         {/* Discreet sign-in link */}
+
         <div className="mt-20 text-center">
           <p className="text-xs text-primary mb-1.5">
             Already purchased? Click below to sign in with Google and access your setup page.
