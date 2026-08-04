@@ -76,7 +76,7 @@ export function StageHero({ onStart: _onStart }: Props) {
 
   const buyUrl = appliedCode
     ? "https://johntperales.gumroad.com/l/xypgwz/FREEACCESS"
-    : "https://johntperales.gumroad.com/l/xypgwz";
+    : "https://johntperales.gumroad.com/l/xypgwz?wanted=true";
   const buyLabel = appliedCode ? "Claim free access" : "Buy now — $50";
 
   return (
