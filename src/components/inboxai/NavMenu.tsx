@@ -31,15 +31,24 @@ export function NavMenu() {
 
   return (
     <div ref={ref} className="fixed top-4 right-4 z-50">
-      <button
-        type="button"
-        aria-label={open ? "Close menu" : "Open menu"}
-        aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
-        className="size-11 rounded-xl border border-border bg-card/90 backdrop-blur flex items-center justify-center text-foreground hover:border-primary/50 hover:text-primary transition-colors shadow-lg"
-      >
-        {open ? <X className="size-5" /> : <Menu className="size-5" />}
-      </button>
+      <div className="flex items-center gap-2">
+        <Link
+          to="/premium"
+          className="h-9 px-3 rounded-lg border border-primary/50 bg-card/90 backdrop-blur text-primary text-xs font-medium flex items-center hover:border-primary hover:bg-primary/10 transition-colors shadow-lg"
+        >
+          Premium ✨
+        </Link>
+        <button
+          type="button"
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          onClick={() => setOpen((o) => !o)}
+          className="size-11 rounded-xl border border-border bg-card/90 backdrop-blur flex items-center justify-center text-foreground hover:border-primary/50 hover:text-primary transition-colors shadow-lg"
+        >
+          {open ? <X className="size-5" /> : <Menu className="size-5" />}
+        </button>
+      </div>
+
 
       {open && (
         <div className="absolute right-0 mt-2 w-60 rounded-2xl border border-border bg-card/95 backdrop-blur-xl shadow-2xl overflow-hidden">
