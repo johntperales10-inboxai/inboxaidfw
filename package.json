@@ -11,6 +11,10 @@
     "lint": "eslint .",
     "format": "prettier --write ."
   },
+  "overrides": {
+    "seroval": "1.6.0",
+    "seroval-plugins": "1.6.0"
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@lovable.dev/cloud-auth-js": "^1.1.2",
