@@ -185,9 +185,22 @@ export function StageHero({ onStart: _onStart }: Props) {
           </div>
         </div>
 
+        {/* Features */}
+        <div className="mt-24 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {features.map((f) => (
+            <div key={f.title} className="p-6 rounded-2xl bg-card border border-border hover:border-primary/40 transition-colors">
+              <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                <f.icon className="size-5 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">{f.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+            </div>
+          ))}
+        </div>
 
         {/* Problem section */}
         <div className="mt-24">
+
           <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tight">
             Your inbox is working against you
           </h2>
