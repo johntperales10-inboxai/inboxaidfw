@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { Check, Sparkles } from "lucide-react";
 import {
