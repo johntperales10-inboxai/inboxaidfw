@@ -8,7 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const PREMIUM_GUMROAD_LINK = "https://johnperales.gumroad.com/l/gcmqik?wanted=true";
+
 
 const basic = [
   "Stars emails from trusted senders",
