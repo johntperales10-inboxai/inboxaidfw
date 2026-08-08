@@ -143,14 +143,57 @@ function PremiumPage() {
         {/* CTA */}
         <div className="mt-14 flex flex-col items-center">
           <a
-            href={PREMIUM_GUMROAD_LINK}
+            href={buyUrl}
             className="gumroad-button inline-flex items-center justify-center px-8 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/30"
           >
-            Get InboxAI Premium — $97
+            {buyLabel}
           </a>
           <p className="mt-3 text-center text-xs text-muted-foreground max-w-md">
             One time payment. No subscription. Includes everything in Basic plus the Priority Dashboard.
           </p>
+
+          {/* Discount code */}
+          <div className="mt-6 pt-5 border-t border-border/50 w-full max-w-sm">
+            <label className="block text-xs text-muted-foreground mb-2">
+              Have a discount code?
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={discountCode}
+                onChange={(e) => {
+                  setDiscountCode(e.target.value);
+                  if (codeError) setCodeError(null);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleApplyCode();
+                  }
+                }}
+                placeholder="Enter your code here"
+                aria-label="Discount code"
+                className="flex-1 min-w-0 h-11 px-3 rounded-md bg-background border-2 border-border text-sm text-foreground focus:outline-none focus:border-primary placeholder:text-muted-foreground"
+              />
+              <button
+                type="button"
+                onClick={handleApplyCode}
+                className="h-11 px-4 rounded-md bg-primary text-primary-foreground text-sm font-semibold shadow-md shadow-primary/40 hover:opacity-90 transition-all"
+              >
+                ✨ Apply
+              </button>
+            </div>
+            {appliedCode && (
+              <p className="mt-3 text-xs text-green-400 text-center">
+                ✓ Discount applied — your Premium access is free!
+              </p>
+            )}
+            {codeError && (
+              <p className="mt-3 text-xs text-red-400 text-center">
+                {codeError}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* FAQ */}
