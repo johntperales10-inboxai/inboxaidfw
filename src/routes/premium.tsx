@@ -58,6 +58,26 @@ export const Route = createFileRoute("/premium")({
 
 function PremiumPage() {
   const { upgrade } = useSearch({ from: "/premium" });
+  const [discountCode, setDiscountCode] = useState("");
+  const [appliedCode, setAppliedCode] = useState<string | null>(null);
+  const [codeError, setCodeError] = useState<string | null>(null);
+
+  const handleApplyCode = () => {
+    const code = discountCode.replace(/\s/g, "").toUpperCase();
+    if (!code) return;
+    if (code === "FREEPREMIUM") {
+      setAppliedCode("FREEPREMIUM");
+      setCodeError(null);
+    } else {
+      setAppliedCode(null);
+      setCodeError("Invalid code — please try again.");
+    }
+  };
+
+  const buyUrl = appliedCode
+    ? "https://johnperales.gumroad.com/l/gcmqik/FREEPREMIUM"
+    : "https://johnperales.gumroad.com/l/gcmqik?wanted=true";
+  const buyLabel = appliedCode ? "Claim Premium access ✨" : "Get InboxAI Premium — $97";
 
   return (
     <main className="min-h-screen bg-background text-foreground px-6 py-20">
