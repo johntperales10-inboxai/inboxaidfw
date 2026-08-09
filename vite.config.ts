@@ -13,7 +13,12 @@ export default defineConfig({
   nitro: {
     preset: "vercel",
   },
-  vite: {
+ vite: {
     plugins: [mcpPlugin()],
+    build: {
+      rollupOptions: {
+        external: ["cloudflare:workers"],
+      },
+    },
   },
 });
