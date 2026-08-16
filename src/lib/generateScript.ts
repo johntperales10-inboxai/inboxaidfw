@@ -317,9 +317,34 @@ function checkForReplies() {
 }
 
 function parseCommands(text) {
-  const commands = []; const pattern = /(TRASH|STAR|UNSUB|IGNORE)\\s+(\\d+)/g; let match;
-  while ((match = pattern.exec(text)) !== null) { commands.push({ action: match[1], number: parseInt(match[2]) }); }
+  const commands = []; const pattern = /(TRASH|STAR|UNSUB|IGNORE)\\s+(\\d+)\\s*(SENDER|DOMAIN|TYPE|ONCE)?/g; let match;
+  while ((match = pattern.exec(text)) !== null) { commands.push({ action: match[1], number: parseInt(match[2]), scope: (match[3] || "SENDER") }); }
   return commands;
+}
+
+// Turn one answer into a reusable rule (sender by default, or domain / request type)
+function learnRuleFromAnswer(flagged, cmd) {
+  if (cmd.scope === "ONCE") return null;
+  const email = (flagged.senderEmail || "").toLowerCase();
+  if (cmd.scope === "DOMAIN") return Rules.add("domain", email.split("@")[1] || "", cmd.action);
+  if (cmd.scope === "TYPE") return Rules.add("request_type", flagged.requestType || "general", cmd.action);
+  return Rules.add("sender", email, cmd.action);
+}
+
+// RULES / FORGET <id> / FORGET ALL commands inside a reply
+function handleRuleCommands(text) {
+  const out = [];
+  if (/\\bRULES\\b/.test(text)) { emailMyRules(); out.push("📘 Sent you your learned rules list."); }
+  if (/\\bFORGET\\s+ALL\\b/.test(text)) { Rules.reset(); out.push("🧹 Deleted all learned rules."); return out; }
+  const pattern = /\\bFORGET\\s+([A-Z0-9]+)\\b/g; let m;
+  while ((m = pattern.exec(text)) !== null) {
+    const id = m[1];
+    const rules = Rules.load();
+    const hit = rules.filter(r => r.rule_id.toUpperCase() === id)[0];
+    if (hit) { Rules.remove(hit.rule_id); out.push("🗑️ Deleted rule " + hit.rule_id + " (" + hit.pattern_type + " " + hit.pattern_value + ")"); }
+    else out.push("⚠️ No rule with id " + id);
+  }
+  return out;
 }
 
 function storePendingFlagged(flagged) { PropertiesService.getScriptProperties().setProperty("pendingFlagged", JSON.stringify(flagged)); }
