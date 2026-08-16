@@ -48,6 +48,73 @@ ${senders}
   lookbackDays: 3
 };
 
+// ---------- LEARNED RULES (reusable answers) ----------
+// A rule is: { rule_id, pattern_type: "sender"|"domain"|"request_type", pattern_value, action, created_at }
+const Rules = {
+  load() { const raw = PropertiesService.getScriptProperties().getProperty("agentRules"); try { return raw ? JSON.parse(raw) : []; } catch (e) { return []; } },
+  save(rules) { PropertiesService.getScriptProperties().setProperty("agentRules", JSON.stringify(rules)); },
+  add(pattern_type, pattern_value, action) {
+    if (!pattern_value) return null;
+    const rules = this.load();
+    const value = String(pattern_value).toLowerCase();
+    const existing = rules.filter(r => r.pattern_type === pattern_type && r.pattern_value === value)[0];
+    if (existing) { existing.action = action; existing.created_at = new Date().toISOString(); this.save(rules); return existing; }
+    const rule = { rule_id: "R" + Date.now().toString(36) + Math.floor(Math.random() * 1000), pattern_type: pattern_type, pattern_value: value, action: action, created_at: new Date().toISOString() };
+    rules.push(rule); this.save(rules); return rule;
+  },
+  // Checks sender first, then domain, then request type
+  match(senderEmail, requestType) {
+    const rules = this.load();
+    const email = (senderEmail || "").toLowerCase();
+    const domain = email.split("@")[1] || "";
+    const order = [["sender", email], ["domain", domain], ["request_type", (requestType || "").toLowerCase()]];
+    for (const pair of order) {
+      if (!pair[1]) continue;
+      const hit = rules.filter(r => r.pattern_type === pair[0] && r.pattern_value === pair[1])[0];
+      if (hit) return hit;
+    }
+    return null;
+  },
+  remove(rule_id) { const rules = this.load(); const next = rules.filter(r => r.rule_id !== rule_id); this.save(next); return next.length !== rules.length; },
+  reset() { PropertiesService.getScriptProperties().deleteProperty("agentRules"); },
+  summarize() {
+    const rules = this.load();
+    if (!rules.length) return "No learned rules yet.";
+    return rules.map(r => \`\${r.rule_id} | \${r.pattern_type} | \${r.pattern_value} → \${r.action} (learned \${new Date(r.created_at).toLocaleDateString()})\`).join("\\n");
+  }
+};
+
+// Categorize the kind of request so similar emails from other senders match too
+function classifyRequestType(subject, snippet) {
+  const text = ((subject || "") + " " + (snippet || "")).toLowerCase();
+  const buckets = [
+    ["unsubscribe request", ["unsubscribe", "opt out", "manage preferences", "stop receiving", "email preferences"]],
+    ["meeting request", ["meeting", "calendar", "schedule a call", "book a time", "invite you to", "zoom", "google meet"]],
+    ["pricing question", ["pricing", "quote", "how much", "cost", "discount", "invoice", "payment"]],
+    ["sales outreach", ["quick question about your", "reaching out", "partnership", "demo", "our platform", "grow your"]],
+    ["newsletter", ["newsletter", "weekly digest", "this week in", "roundup", "issue #"]],
+    ["receipt or order", ["receipt", "your order", "shipped", "tracking number", "confirmation number"]],
+    ["account notice", ["password", "verify your", "security alert", "sign-in", "account update", "terms of service"]],
+    ["support request", ["help", "issue", "not working", "support ticket", "bug", "problem with"]]
+  ];
+  for (const b of buckets) { if (b[1].some(k => text.indexOf(k) !== -1)) return b[0]; }
+  return "general";
+}
+
+function applyRuleAction(action, thread, msg, senderEmail, actioned, ruleId) {
+  switch (action) {
+    case "STAR": msg.star(); actioned.push(\`⭐ Starred by learned rule \${ruleId}: \${senderEmail}\`); return true;
+    case "TRASH": thread.moveToTrash(); actioned.push(\`🗑️ Trashed by learned rule \${ruleId}: \${senderEmail}\`); return true;
+    case "UNSUB": {
+      const u = getUnsubscribeUrl(msg);
+      if (u && attemptUnsubscribe(u)) { thread.moveToTrash(); actioned.push(\`📧 Unsubscribed by learned rule \${ruleId}: \${senderEmail}\`); return true; }
+      return false;
+    }
+    case "IGNORE": actioned.push(\`✋ Left alone by learned rule \${ruleId}: \${senderEmail}\`); return true;
+    default: return false;
+  }
+}
+
 const Memory = {
   load() { const raw = PropertiesService.getScriptProperties().getProperty("agentMemory"); return raw ? JSON.parse(raw) : {}; },
   save(memory) { PropertiesService.getScriptProperties().setProperty("agentMemory", JSON.stringify(memory)); },
@@ -123,6 +190,11 @@ function runAgent() {
       actioned.push("⭐ Auto-starred real person: " + senderEmail);
       continue;
     }
+    const requestType = classifyRequestType(subject, snippet);
+    // 1) Learned rules first (sender → domain → request type). If one matches, never ask again.
+    const rule = Rules.match(senderEmail, requestType);
+    if (rule && applyRuleAction(rule.action, thread, msg, senderEmail, actioned, rule.rule_id)) continue;
+
     let decision = Memory.recall(senderEmail);
     if (!decision) { decision = askGemini(senderEmail, extractName(senderFull), subject, snippet); Memory.remember(senderEmail, decision.action, decision.reason); }
     switch (decision.action) {
@@ -131,9 +203,9 @@ function runAgent() {
       case "UNSUB":
         const url = getUnsubscribeUrl(msg);
         if (url && attemptUnsubscribe(url)) { thread.moveToTrash(); actioned.push(\`📧 Unsubscribed: \${senderEmail}\`); }
-        else flagged.push({ from: senderFull, subject: subject, reason: "Unsubscribe failed — manual action needed", threadId: thread.getId(), senderEmail: senderEmail });
+        else flagged.push({ from: senderFull, subject: subject, reason: "Unsubscribe failed — manual action needed", threadId: thread.getId(), senderEmail: senderEmail, requestType: requestType });
         break;
-      default: flagged.push({ from: senderFull, subject: subject, reason: decision.reason, threadId: thread.getId(), senderEmail: senderEmail });
+      default: flagged.push({ from: senderFull, subject: subject, reason: decision.reason, threadId: thread.getId(), senderEmail: senderEmail, requestType: requestType });
     }
   }
   if (flagged.length) sendFlagNotification(flagged, actioned);
@@ -167,7 +239,7 @@ function clearSpam(actioned) { const s = GmailApp.search("in:spam", 0, SETTINGS.
 function sendFlagNotification(flagged, actioned) {
   storePendingFlagged(flagged);
   const lines = flagged.map((e, i) => \`\${i + 1}. From: \${e.from}\\n   "\${e.subject}"\\n   Reason: \${e.reason}\`).join("\\n\\n");
-  const instructions = "HOW TO HANDLE THESE EMAILS:\\nJust reply to this email with simple commands:\\nTRASH 1 — trash email number 1\\nSTAR 2 — star email number 2\\nUNSUB 3 — unsubscribe from email number 3\\nIGNORE 1 — leave email 1 alone\\nYou can combine them: TRASH 1, UNSUB 2, STAR 3\\nThe agent will process your reply within the hour and send you a confirmation.";
+  const instructions = "HOW TO HANDLE THESE EMAILS:\\nJust reply to this email with simple commands:\\nTRASH 1 — trash email number 1\\nSTAR 2 — star email number 2\\nUNSUB 3 — unsubscribe from email number 3\\nIGNORE 1 — leave email 1 alone\\nYou can combine them: TRASH 1, UNSUB 2, STAR 3\\n\\nI LEARN FROM YOUR ANSWERS:\\nBy default I save your answer as a rule for that exact sender, so I never ask about them again.\\nWant it to cover more? Add a scope word:\\nTRASH 1 DOMAIN — apply to everyone at that sender's domain\\nUNSUB 2 TYPE — apply to every email of that same kind (e.g. unsubscribe request, meeting request, pricing question)\\nTRASH 3 ONCE — just this once, do not learn a rule\\n\\nMANAGE LEARNED RULES:\\nReply RULES — I email you the full list of learned rules with their IDs\\nReply FORGET R123abc — delete that rule\\nReply FORGET ALL — delete every learned rule\\nThe agent will process your reply within the hour and send you a confirmation.";
   sendNotification(\`🚩 \${flagged.length} email(s) need your attention\`, \`\${flagged.length} email(s) were flagged:\\n\\n\${lines}\\n\\nThese were NOT touched.\\n\\n\${instructions}\`, { hasFlagged: true });
 }
 
@@ -188,6 +260,18 @@ function testGemini() { Logger.log(JSON.stringify(askGemini("newsletter@example.
 function showMemory() { Logger.log(Memory.summarize()); }
 function forgetSender() { Memory.forget("email@example.com"); }
 function resetMemory() { Memory.reset(); }
+
+// ---------- VIEW / DELETE YOUR LEARNED RULES ----------
+// Run showRules() to print them, emailMyRules() to get them in your inbox,
+// deleteRule("R123abc") to delete one, resetRules() to delete all.
+function showRules() { Logger.log(Rules.summarize()); }
+function emailMyRules() {
+  GmailApp.sendEmail(SETTINGS.notificationEmail, "📘 Gmail Agent: your learned rules",
+    "These are the rules I learned from your answers:\\n\\n" + Rules.summarize() +
+    "\\n\\nTo delete one, reply to a flag email with: FORGET <rule_id>\\nTo delete all: FORGET ALL\\n\\n— Your Gmail AI Agent");
+}
+function deleteRule(ruleId) { Logger.log(Rules.remove(ruleId) ? "Deleted " + ruleId : "No rule with id " + ruleId); }
+function resetRules() { Rules.reset(); Logger.log("All learned rules deleted."); }
 function stopAgent() { ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t)); Logger.log("Agent stopped."); }
 
 function checkForReplies() {
@@ -198,11 +282,16 @@ function checkForReplies() {
       if (!msg.isUnread()) continue;
       if (msg.getFrom().toLowerCase().indexOf(Session.getActiveUser().getEmail().toLowerCase()) === -1) continue;
       const body = msg.getPlainBody().toUpperCase();
+      const ruleResults = handleRuleCommands(body);
       const commands = parseCommands(body);
-      if (commands.length === 0) { msg.markRead(); continue; }
+      if (commands.length === 0) {
+        msg.markRead();
+        if (ruleResults.length) GmailApp.sendEmail(SETTINGS.notificationEmail, "📘 Gmail Agent: rules updated", ruleResults.join("\\n") + "\\n\\n— Your Gmail AI Agent");
+        continue;
+      }
       const stored = getPendingFlagged();
       if (!stored || !stored.length) { msg.markRead(); continue; }
-      const results = [];
+      const results = ruleResults.slice();
       for (const cmd of commands) {
         const index = cmd.number - 1;
         if (index < 0 || index >= stored.length) { results.push("⚠️ Email " + cmd.number + " not found"); continue; }
@@ -216,6 +305,8 @@ function checkForReplies() {
             case "UNSUB": const url = getUnsubscribeUrl(emailThread.getMessages().slice(-1)[0]); if (url && attemptUnsubscribe(url)) { emailThread.moveToTrash(); Memory.remember(flagged.senderEmail, "UNSUB", "Unsubscribed by reply"); results.push("📧 Unsubscribed from email " + cmd.number); } else { results.push("⚠️ Could not unsubscribe from email " + cmd.number); } break;
             case "IGNORE": Memory.remember(flagged.senderEmail, "FLAG", "Ignored by user"); results.push("✋ Ignored email " + cmd.number); break;
           }
+          const learned = learnRuleFromAnswer(flagged, cmd);
+          if (learned) results.push("   📘 Learned rule " + learned.rule_id + ": " + learned.pattern_type + " \\"" + learned.pattern_value + "\\" → " + learned.action + " (I won't ask again)");
         } catch(err) { results.push("❌ Error on email " + cmd.number + ": " + err.message); }
       }
       msg.markRead();
@@ -226,9 +317,34 @@ function checkForReplies() {
 }
 
 function parseCommands(text) {
-  const commands = []; const pattern = /(TRASH|STAR|UNSUB|IGNORE)\\s+(\\d+)/g; let match;
-  while ((match = pattern.exec(text)) !== null) { commands.push({ action: match[1], number: parseInt(match[2]) }); }
+  const commands = []; const pattern = /(TRASH|STAR|UNSUB|IGNORE)\\s+(\\d+)\\s*(SENDER|DOMAIN|TYPE|ONCE)?/g; let match;
+  while ((match = pattern.exec(text)) !== null) { commands.push({ action: match[1], number: parseInt(match[2]), scope: (match[3] || "SENDER") }); }
   return commands;
+}
+
+// Turn one answer into a reusable rule (sender by default, or domain / request type)
+function learnRuleFromAnswer(flagged, cmd) {
+  if (cmd.scope === "ONCE") return null;
+  const email = (flagged.senderEmail || "").toLowerCase();
+  if (cmd.scope === "DOMAIN") return Rules.add("domain", email.split("@")[1] || "", cmd.action);
+  if (cmd.scope === "TYPE") return Rules.add("request_type", flagged.requestType || "general", cmd.action);
+  return Rules.add("sender", email, cmd.action);
+}
+
+// RULES / FORGET <id> / FORGET ALL commands inside a reply
+function handleRuleCommands(text) {
+  const out = [];
+  if (/\\bRULES\\b/.test(text)) { emailMyRules(); out.push("📘 Sent you your learned rules list."); }
+  if (/\\bFORGET\\s+ALL\\b/.test(text)) { Rules.reset(); out.push("🧹 Deleted all learned rules."); return out; }
+  const pattern = /\\bFORGET\\s+([A-Z0-9]+)\\b/g; let m;
+  while ((m = pattern.exec(text)) !== null) {
+    const id = m[1];
+    const rules = Rules.load();
+    const hit = rules.filter(r => r.rule_id.toUpperCase() === id)[0];
+    if (hit) { Rules.remove(hit.rule_id); out.push("🗑️ Deleted rule " + hit.rule_id + " (" + hit.pattern_type + " " + hit.pattern_value + ")"); }
+    else out.push("⚠️ No rule with id " + id);
+  }
+  return out;
 }
 
 function storePendingFlagged(flagged) { PropertiesService.getScriptProperties().setProperty("pendingFlagged", JSON.stringify(flagged)); }

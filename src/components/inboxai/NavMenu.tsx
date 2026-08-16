@@ -33,7 +33,7 @@ export function NavMenu() {
     <div ref={ref} className="fixed top-4 right-4 z-50">
       <div className="flex items-center gap-2">
         <Link
-          to="/premium"
+          to="/premium" search={{ upgrade: undefined }}
           className="h-9 px-3 rounded-lg border border-primary/50 bg-card/90 backdrop-blur text-primary text-xs font-medium flex items-center hover:border-primary hover:bg-primary/10 transition-colors shadow-lg"
         >
           Premium ✨
@@ -75,7 +75,7 @@ export function NavMenu() {
               </a>
             ))}
             <Link
-              to="/premium"
+              to="/premium" search={{ upgrade: undefined }}
               onClick={() => setOpen(false)}
               className="block px-3 py-2.5 rounded-lg text-sm font-medium text-primary hover:bg-primary/10 transition-colors"
             >

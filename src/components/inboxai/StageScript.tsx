@@ -87,6 +87,26 @@ export function StageScript({ script, onBack }: Props) {
           </div>
         </div>
 
+        <div className="mt-16 p-8 rounded-2xl bg-card border border-primary/30">
+          <h2 className="text-2xl font-bold tracking-tight">Your agent learns from your answers</h2>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            When your agent is unsure, it still emails you — but now it remembers your reply as a reusable
+            rule, so it stops asking about the same thing again.
+          </p>
+          <ul className="mt-5 space-y-2 text-sm text-foreground/90">
+            <li><span className="font-mono text-primary">TRASH 1</span> — learns a rule for that exact sender</li>
+            <li><span className="font-mono text-primary">TRASH 1 DOMAIN</span> — applies to everyone at that sender&apos;s domain</li>
+            <li><span className="font-mono text-primary">UNSUB 2 TYPE</span> — applies to that kind of request (unsubscribe, meeting, pricing…)</li>
+            <li><span className="font-mono text-primary">TRASH 3 ONCE</span> — handle it once, don&apos;t learn anything</li>
+          </ul>
+          <p className="mt-6 text-sm font-semibold">View and delete your learned rules</p>
+          <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
+            <li>Reply <span className="font-mono text-primary">RULES</span> to any agent email — it emails you the full list with rule IDs.</li>
+            <li>Reply <span className="font-mono text-primary">FORGET R123abc</span> to delete one, or <span className="font-mono text-primary">FORGET ALL</span> to wipe them.</li>
+            <li>Or in script.google.com, run <span className="font-mono text-primary">showRules</span>, <span className="font-mono text-primary">deleteRule</span>, or <span className="font-mono text-primary">resetRules</span>.</li>
+          </ul>
+        </div>
+
         <div className="mt-12 space-y-3">
           {steps.map((s, i) => (
             <div key={i} className="flex gap-4 p-5 rounded-xl bg-card border border-border">
