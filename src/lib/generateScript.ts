@@ -190,6 +190,11 @@ function runAgent() {
       actioned.push("⭐ Auto-starred real person: " + senderEmail);
       continue;
     }
+    const requestType = classifyRequestType(subject, snippet);
+    // 1) Learned rules first (sender → domain → request type). If one matches, never ask again.
+    const rule = Rules.match(senderEmail, requestType);
+    if (rule && applyRuleAction(rule.action, thread, msg, senderEmail, actioned, rule.rule_id)) continue;
+
     let decision = Memory.recall(senderEmail);
     if (!decision) { decision = askGemini(senderEmail, extractName(senderFull), subject, snippet); Memory.remember(senderEmail, decision.action, decision.reason); }
     switch (decision.action) {
@@ -198,9 +203,9 @@ function runAgent() {
       case "UNSUB":
         const url = getUnsubscribeUrl(msg);
         if (url && attemptUnsubscribe(url)) { thread.moveToTrash(); actioned.push(\`📧 Unsubscribed: \${senderEmail}\`); }
-        else flagged.push({ from: senderFull, subject: subject, reason: "Unsubscribe failed — manual action needed", threadId: thread.getId(), senderEmail: senderEmail });
+        else flagged.push({ from: senderFull, subject: subject, reason: "Unsubscribe failed — manual action needed", threadId: thread.getId(), senderEmail: senderEmail, requestType: requestType });
         break;
-      default: flagged.push({ from: senderFull, subject: subject, reason: decision.reason, threadId: thread.getId(), senderEmail: senderEmail });
+      default: flagged.push({ from: senderFull, subject: subject, reason: decision.reason, threadId: thread.getId(), senderEmail: senderEmail, requestType: requestType });
     }
   }
   if (flagged.length) sendFlagNotification(flagged, actioned);
