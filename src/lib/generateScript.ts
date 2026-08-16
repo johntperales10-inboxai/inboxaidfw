@@ -48,6 +48,73 @@ ${senders}
   lookbackDays: 3
 };
 
+// ---------- LEARNED RULES (reusable answers) ----------
+// A rule is: { rule_id, pattern_type: "sender"|"domain"|"request_type", pattern_value, action, created_at }
+const Rules = {
+  load() { const raw = PropertiesService.getScriptProperties().getProperty("agentRules"); try { return raw ? JSON.parse(raw) : []; } catch (e) { return []; } },
+  save(rules) { PropertiesService.getScriptProperties().setProperty("agentRules", JSON.stringify(rules)); },
+  add(pattern_type, pattern_value, action) {
+    if (!pattern_value) return null;
+    const rules = this.load();
+    const value = String(pattern_value).toLowerCase();
+    const existing = rules.filter(r => r.pattern_type === pattern_type && r.pattern_value === value)[0];
+    if (existing) { existing.action = action; existing.created_at = new Date().toISOString(); this.save(rules); return existing; }
+    const rule = { rule_id: "R" + Date.now().toString(36) + Math.floor(Math.random() * 1000), pattern_type: pattern_type, pattern_value: value, action: action, created_at: new Date().toISOString() };
+    rules.push(rule); this.save(rules); return rule;
+  },
+  // Checks sender first, then domain, then request type
+  match(senderEmail, requestType) {
+    const rules = this.load();
+    const email = (senderEmail || "").toLowerCase();
+    const domain = email.split("@")[1] || "";
+    const order = [["sender", email], ["domain", domain], ["request_type", (requestType || "").toLowerCase()]];
+    for (const pair of order) {
+      if (!pair[1]) continue;
+      const hit = rules.filter(r => r.pattern_type === pair[0] && r.pattern_value === pair[1])[0];
+      if (hit) return hit;
+    }
+    return null;
+  },
+  remove(rule_id) { const rules = this.load(); const next = rules.filter(r => r.rule_id !== rule_id); this.save(next); return next.length !== rules.length; },
+  reset() { PropertiesService.getScriptProperties().deleteProperty("agentRules"); },
+  summarize() {
+    const rules = this.load();
+    if (!rules.length) return "No learned rules yet.";
+    return rules.map(r => \`\${r.rule_id} | \${r.pattern_type} | \${r.pattern_value} → \${r.action} (learned \${new Date(r.created_at).toLocaleDateString()})\`).join("\\n");
+  }
+};
+
+// Categorize the kind of request so similar emails from other senders match too
+function classifyRequestType(subject, snippet) {
+  const text = ((subject || "") + " " + (snippet || "")).toLowerCase();
+  const buckets = [
+    ["unsubscribe request", ["unsubscribe", "opt out", "manage preferences", "stop receiving", "email preferences"]],
+    ["meeting request", ["meeting", "calendar", "schedule a call", "book a time", "invite you to", "zoom", "google meet"]],
+    ["pricing question", ["pricing", "quote", "how much", "cost", "discount", "invoice", "payment"]],
+    ["sales outreach", ["quick question about your", "reaching out", "partnership", "demo", "our platform", "grow your"]],
+    ["newsletter", ["newsletter", "weekly digest", "this week in", "roundup", "issue #"]],
+    ["receipt or order", ["receipt", "your order", "shipped", "tracking number", "confirmation number"]],
+    ["account notice", ["password", "verify your", "security alert", "sign-in", "account update", "terms of service"]],
+    ["support request", ["help", "issue", "not working", "support ticket", "bug", "problem with"]]
+  ];
+  for (const b of buckets) { if (b[1].some(k => text.indexOf(k) !== -1)) return b[0]; }
+  return "general";
+}
+
+function applyRuleAction(action, thread, msg, senderEmail, actioned, ruleId) {
+  switch (action) {
+    case "STAR": msg.star(); actioned.push(\`⭐ Starred by learned rule \${ruleId}: \${senderEmail}\`); return true;
+    case "TRASH": thread.moveToTrash(); actioned.push(\`🗑️ Trashed by learned rule \${ruleId}: \${senderEmail}\`); return true;
+    case "UNSUB": {
+      const u = getUnsubscribeUrl(msg);
+      if (u && attemptUnsubscribe(u)) { thread.moveToTrash(); actioned.push(\`📧 Unsubscribed by learned rule \${ruleId}: \${senderEmail}\`); return true; }
+      return false;
+    }
+    case "IGNORE": actioned.push(\`✋ Left alone by learned rule \${ruleId}: \${senderEmail}\`); return true;
+    default: return false;
+  }
+}
+
 const Memory = {
   load() { const raw = PropertiesService.getScriptProperties().getProperty("agentMemory"); return raw ? JSON.parse(raw) : {}; },
   save(memory) { PropertiesService.getScriptProperties().setProperty("agentMemory", JSON.stringify(memory)); },
