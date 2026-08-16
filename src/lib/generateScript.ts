@@ -305,6 +305,8 @@ function checkForReplies() {
             case "UNSUB": const url = getUnsubscribeUrl(emailThread.getMessages().slice(-1)[0]); if (url && attemptUnsubscribe(url)) { emailThread.moveToTrash(); Memory.remember(flagged.senderEmail, "UNSUB", "Unsubscribed by reply"); results.push("📧 Unsubscribed from email " + cmd.number); } else { results.push("⚠️ Could not unsubscribe from email " + cmd.number); } break;
             case "IGNORE": Memory.remember(flagged.senderEmail, "FLAG", "Ignored by user"); results.push("✋ Ignored email " + cmd.number); break;
           }
+          const learned = learnRuleFromAnswer(flagged, cmd);
+          if (learned) results.push("   📘 Learned rule " + learned.rule_id + ": " + learned.pattern_type + " \\"" + learned.pattern_value + "\\" → " + learned.action + " (I won't ask again)");
         } catch(err) { results.push("❌ Error on email " + cmd.number + ": " + err.message); }
       }
       msg.markRead();
