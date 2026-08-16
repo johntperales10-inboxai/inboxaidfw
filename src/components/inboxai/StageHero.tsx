@@ -300,7 +300,7 @@ export function StageHero({ onStart: _onStart }: Props) {
             </ul>
             <div className="mt-8">
               <Link
-                to="/premium"
+                to="/premium" search={{ upgrade: undefined }}
                 className="inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/30"
               >
                 Learn more about Premium →
