@@ -282,11 +282,16 @@ function checkForReplies() {
       if (!msg.isUnread()) continue;
       if (msg.getFrom().toLowerCase().indexOf(Session.getActiveUser().getEmail().toLowerCase()) === -1) continue;
       const body = msg.getPlainBody().toUpperCase();
+      const ruleResults = handleRuleCommands(body);
       const commands = parseCommands(body);
-      if (commands.length === 0) { msg.markRead(); continue; }
+      if (commands.length === 0) {
+        msg.markRead();
+        if (ruleResults.length) GmailApp.sendEmail(SETTINGS.notificationEmail, "📘 Gmail Agent: rules updated", ruleResults.join("\\n") + "\\n\\n— Your Gmail AI Agent");
+        continue;
+      }
       const stored = getPendingFlagged();
       if (!stored || !stored.length) { msg.markRead(); continue; }
-      const results = [];
+      const results = ruleResults.slice();
       for (const cmd of commands) {
         const index = cmd.number - 1;
         if (index < 0 || index >= stored.length) { results.push("⚠️ Email " + cmd.number + " not found"); continue; }
