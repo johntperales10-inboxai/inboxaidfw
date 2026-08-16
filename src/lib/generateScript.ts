@@ -260,6 +260,18 @@ function testGemini() { Logger.log(JSON.stringify(askGemini("newsletter@example.
 function showMemory() { Logger.log(Memory.summarize()); }
 function forgetSender() { Memory.forget("email@example.com"); }
 function resetMemory() { Memory.reset(); }
+
+// ---------- VIEW / DELETE YOUR LEARNED RULES ----------
+// Run showRules() to print them, emailMyRules() to get them in your inbox,
+// deleteRule("R123abc") to delete one, resetRules() to delete all.
+function showRules() { Logger.log(Rules.summarize()); }
+function emailMyRules() {
+  GmailApp.sendEmail(SETTINGS.notificationEmail, "📘 Gmail Agent: your learned rules",
+    "These are the rules I learned from your answers:\\n\\n" + Rules.summarize() +
+    "\\n\\nTo delete one, reply to a flag email with: FORGET <rule_id>\\nTo delete all: FORGET ALL\\n\\n— Your Gmail AI Agent");
+}
+function deleteRule(ruleId) { Logger.log(Rules.remove(ruleId) ? "Deleted " + ruleId : "No rule with id " + ruleId); }
+function resetRules() { Rules.reset(); Logger.log("All learned rules deleted."); }
 function stopAgent() { ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t)); Logger.log("Agent stopped."); }
 
 function checkForReplies() {
