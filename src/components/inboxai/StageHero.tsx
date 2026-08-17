@@ -36,6 +36,7 @@ const steps = [
 ];
 
 const faqs = [
+  { q: "Doesn't Google already do this?", a: "Gmail has basic filters you set up manually — you write the rules, you maintain them, and they never learn or adapt. InboxAI is an AI that reads and understands every email like a human would, makes intelligent decisions automatically, gets smarter over time, and runs itself every hour without you touching anything. Gmail does sorting. InboxAI does thinking. The simplest way to put it — Gmail gives you a filing cabinet. InboxAI gives you a personal assistant who already knows what you care about." },
   { q: "Is my email safe?", a: "Yes. The agent runs entirely inside your own Google account — nobody else ever sees your emails. It's like hiring an assistant who already works at Google. You can revoke access any time from your Google account settings." },
   { q: "Do I need to know how to code?", a: "No. The setup wizard builds your custom script automatically. You just copy and paste it into one place and click run. The whole process takes about 5 minutes." },
   { q: "What if the agent makes a mistake?", a: "The agent never permanently deletes anything. Trashed emails stay in your trash for 30 days so you can always recover them. And if it's unsure about something it asks you first rather than guessing." },
