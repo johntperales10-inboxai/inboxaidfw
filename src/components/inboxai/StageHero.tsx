@@ -9,7 +9,7 @@ import {
 import { Reviews } from "./Reviews";
 import { Link } from "@tanstack/react-router";
 
-const BASE_GUMROAD_URL = "https://johntperales.gumroad.com/l/xypgwz";
+const BASE_GUMROAD_URL = "https://johnperales.gumroad.com/l/xypgwz";
 const VALID_CODES = new Set(["FREEACCESS"]);
 
 interface Props {
@@ -76,8 +76,8 @@ export function StageHero({ onStart: _onStart }: Props) {
   };
 
   const buyUrl = appliedCode
-    ? "https://johntperales.gumroad.com/l/xypgwz/FREEACCESS"
-    : "https://johntperales.gumroad.com/l/xypgwz?wanted=true";
+    ? "https://johnperales.gumroad.com/l/xypgwz/FREEACCESS"
+    : "https://johnperales.gumroad.com/l/xypgwz?wanted=true";
   const buyLabel = appliedCode ? "Claim free access" : "Buy now — $50";
 
   return (
