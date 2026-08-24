@@ -94,7 +94,7 @@ function Index() {
           </p>
           <div className="mt-8 flex flex-col gap-3">
             <a
-              href="https://johntperales.gumroad.com/l/xypgwz?wanted=true"
+              href="https://johnperales.gumroad.com/l/xypgwz?wanted=true"
               className="gumroad-button w-full px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium text-sm"
             >
               Buy now — $50
