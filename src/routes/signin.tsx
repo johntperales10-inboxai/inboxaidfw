@@ -36,6 +36,8 @@ function isLovableBrokerOrigin(): boolean {
   return (
     host === "localhost" ||
     host === "127.0.0.1" ||
+    host === "inboxaidfw.com" ||
+    host === "www.inboxaidfw.com" ||
     host.endsWith(".lovable.app") ||
     host.endsWith(".lovableproject.com")
   );
