@@ -24,24 +24,6 @@ function GoogleLogo() {
   );
 }
 
-// Lovable's managed Google sign-in (lovable.auth.signInWithOAuth) navigates to the
-// relative path "/~oauth/initiate", which is only intercepted by Lovable's proxy on
-// Lovable-served origins (lovable.app + Lovable custom domains + the editor preview).
-// On any other origin — e.g. a separate Vercel deployment — that path 404s, so we fall
-// back to direct Supabase OAuth, which works on any origin whitelisted in Auth settings.
-function isLovableBrokerOrigin(): boolean {
-  if (typeof window === "undefined") return false;
-  const host = window.location.hostname;
-  return (
-    host === "localhost" ||
-    host === "127.0.0.1" ||
-    host === "inboxaidfw.com" ||
-    host === "www.inboxaidfw.com" ||
-    host.endsWith(".lovable.app") ||
-    host.endsWith(".lovableproject.com")
-  );
-}
-
 function SignInPage() {
   const [signingIn, setSigningIn] = useState(false);
   const [signInError, setSignInError] = useState<string | null>(null);
@@ -50,32 +32,20 @@ function SignInPage() {
     setSignInError(null);
     setSigningIn(true);
     try {
-      if (isLovableBrokerOrigin()) {
-        // Lovable-served origin (lovable.app / editor preview): use the managed broker.
-        const result = await lovable.auth.signInWithOAuth("google", {
-          redirect_uri: window.location.origin,
-        });
-        if (result.error) {
-          setSignInError(result.error.message || "Sign in failed. Please try again.");
-          setSigningIn(false);
-        }
-      } else {
-        // Non-Lovable origin (e.g. a separate Vercel deployment): the broker's
-        // /~oauth path isn't intercepted here, so use direct Supabase OAuth.
-        const { data, error } = await supabase.auth.signInWithOAuth({
-          provider: "google",
-          options: { redirectTo: window.location.origin },
-        });
-        if (error) {
-          setSignInError(error.message || "Sign in failed. Please try again.");
-          setSigningIn(false);
-          return;
-        }
-        // Browser redirects to Google. On return the Supabase client auto-detects the
-        // session in the URL (detectSessionInUrl) and fires SIGNED_IN on the landing page.
-        if (data?.url) {
-          window.location.href = data.url;
-        }
+      // Direct Supabase Google OAuth — works identically on every origin
+      // (lovable.app, inboxaidfw.com, vercel.app) as long as the origin's
+      // /auth/callback URL is allow-listed in the auth redirect settings.
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
+      });
+      if (error) {
+        setSignInError(error.message || "Sign in failed. Please try again.");
+        setSigningIn(false);
+        return;
+      }
+      if (data?.url) {
+        window.location.href = data.url;
       }
     } catch (e) {
       setSignInError(e instanceof Error ? e.message : "Sign in failed.");
