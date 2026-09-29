@@ -62,22 +62,24 @@ function PremiumPage() {
   const [appliedCode, setAppliedCode] = useState<string | null>(null);
   const [codeError, setCodeError] = useState<string | null>(null);
 
+  // Gumroad validates offer codes itself (/l/<product>/<code>), so no code is
+  // hardcoded here — anything in this file is readable by every visitor.
   const handleApplyCode = () => {
     const code = discountCode.replace(/\s/g, "").toUpperCase();
     if (!code) return;
-    if (code === "FREEPREMIUM") {
-      setAppliedCode("FREEPREMIUM");
-      setCodeError(null);
-    } else {
+    if (!/^[A-Z0-9_-]{2,64}$/.test(code)) {
       setAppliedCode(null);
-      setCodeError("Invalid code — please try again.");
+      setCodeError("Codes only use letters, numbers, - and _.");
+      return;
     }
+    setAppliedCode(code);
+    setCodeError(null);
   };
 
   const buyUrl = appliedCode
-    ? "https://johnperales.gumroad.com/l/gcmqik/FREEPREMIUM"
+    ? `https://johnperales.gumroad.com/l/gcmqik/${encodeURIComponent(appliedCode)}?wanted=true`
     : "https://johnperales.gumroad.com/l/gcmqik?wanted=true";
-  const buyLabel = appliedCode ? "Claim Premium access ✨" : "Get InboxAI Premium — $97";
+  const buyLabel = appliedCode ? "Continue to checkout with code →" : "Get InboxAI Premium — $97";
 
   return (
     <main className="min-h-screen bg-background text-foreground px-6 py-20">
@@ -185,7 +187,7 @@ function PremiumPage() {
             </div>
             {appliedCode && (
               <p className="mt-3 text-xs text-green-400 text-center">
-                ✓ Discount applied — your Premium access is free!
+                ✓ Code {appliedCode} will be applied at checkout.
               </p>
             )}
             {codeError && (

@@ -152,15 +152,16 @@ Other rules: STAR=personal/important, TRASH=junk/scam, UNSUB=newsletter/marketin
 Reply ONLY:
 DECISION: [STAR|TRASH|UNSUB|FLAG]
 REASON: [one sentence]\`;
-  const url = \`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=\${SETTINGS.geminiApiKey}\`;
+  const url = \`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=\${SETTINGS.geminiApiKey}\`;
   try {
-    const res = UrlFetchApp.fetch(url, { method: "post", contentType: "application/json", payload: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1, maxOutputTokens: 60 } }), muteHttpExceptions: true });
-    const text = JSON.parse(res.getContentText())?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-    if (!text) return { action: "FLAG", reason: "No response from Gemini" };
+    const res = UrlFetchApp.fetch(url, { method: "post", contentType: "application/json", payload: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1, maxOutputTokens: 1024 } }), muteHttpExceptions: true });
+    const parts = JSON.parse(res.getContentText())?.candidates?.[0]?.content?.parts || [];
+    const text = parts.map(p => p.text || "").join("").trim();
+    if (!text) return { action: "FLAG", reason: "No response from Gemini (HTTP " + res.getResponseCode() + ")", error: true };
     const action = (text.match(/DECISION:\\s*(STAR|TRASH|UNSUB|FLAG)/i) || [])[1]?.toUpperCase() || "FLAG";
     const reason = (text.match(/REASON:\\s*(.+)/i) || [])[1]?.trim() || "No reason";
     return { action, reason };
-  } catch (e) { return { action: "FLAG", reason: "API error: " + e.message }; }
+  } catch (e) { return { action: "FLAG", reason: "API error: " + e.message, error: true }; }
 }
 
 function setupTrigger() {
@@ -179,6 +180,8 @@ function runAgent() {
   for (const thread of threads) {
     const msgs = thread.getMessages();
     if (!msgs.length) continue;
+    // Already sent to you in a flag email — don't ask about it again every hour
+    if (wasFlagged(thread.getId())) continue;
     const msg = msgs[msgs.length - 1];
     const senderFull = msg.getFrom();
     const senderEmail = extractEmail(senderFull);
@@ -196,7 +199,9 @@ function runAgent() {
     if (rule && applyRuleAction(rule.action, thread, msg, senderEmail, actioned, rule.rule_id)) continue;
 
     let decision = Memory.recall(senderEmail);
-    if (!decision) { decision = askGemini(senderEmail, extractName(senderFull), subject, snippet); Memory.remember(senderEmail, decision.action, decision.reason); }
+    // Don't let a failed API call become a permanent memory for this sender
+    if (decision && /^(No response from Gemini|API error)/.test(decision.reason || "")) decision = null;
+    if (!decision) { decision = askGemini(senderEmail, extractName(senderFull), subject, snippet); if (!decision.error) Memory.remember(senderEmail, decision.action, decision.reason); }
     switch (decision.action) {
       case "STAR": msg.star(); actioned.push(\`⭐ Starred: "\${subject}"\`); break;
       case "TRASH": thread.moveToTrash(); actioned.push(\`🗑️ Trashed: "\${subject}"\`); break;
@@ -218,8 +223,15 @@ function processTrustedSenders(actioned) {
 }
 
 function isTrustedSender(email) {
-  const individualMatch = SETTINGS.trustedSenders.some(t => email.toLowerCase().includes(t.toLowerCase()));
-  const domainMatch = SETTINGS.trustedDomains.some(d => email.toLowerCase().endsWith(d.toLowerCase()));
+  const e = (email || "").toLowerCase().trim();
+  const domain = e.split("@")[1] || "";
+  // Exact address match only; "contains" would let bob@acme.com.evil.ru pass as bob@acme.com
+  const individualMatch = SETTINGS.trustedSenders.some(t => e === t.toLowerCase().trim());
+  // Exact domain or a real subdomain of it; "endsWith" alone would let evilacme.com pass as acme.com
+  const domainMatch = SETTINGS.trustedDomains.some(d => {
+    const td = d.toLowerCase().trim().replace(/^@/, "");
+    return td && (domain === td || domain.endsWith("." + td));
+  });
   return individualMatch || domainMatch;
 }
 
@@ -237,18 +249,20 @@ function isRealPerson(senderEmail, subject, snippet) {
 function clearSpam(actioned) { const s = GmailApp.search("in:spam", 0, SETTINGS.batchSize); if (s.length) { GmailApp.moveThreadsToTrash(s); actioned.push(\`🗑️ Trashed \${s.length} spam threads\`); } }
 
 function sendFlagNotification(flagged, actioned) {
-  storePendingFlagged(flagged);
+  // Each flag email gets its own batch id so "TRASH 1" always refers to the list in the email you replied to
+  const batchId = "B" + Date.now().toString(36).toUpperCase();
   const lines = flagged.map((e, i) => \`\${i + 1}. From: \${e.from}\\n   "\${e.subject}"\\n   Reason: \${e.reason}\`).join("\\n\\n");
   const instructions = "HOW TO HANDLE THESE EMAILS:\\nJust reply to this email with simple commands:\\nTRASH 1 — trash email number 1\\nSTAR 2 — star email number 2\\nUNSUB 3 — unsubscribe from email number 3\\nIGNORE 1 — leave email 1 alone\\nYou can combine them: TRASH 1, UNSUB 2, STAR 3\\n\\nI LEARN FROM YOUR ANSWERS:\\nBy default I save your answer as a rule for that exact sender, so I never ask about them again.\\nWant it to cover more? Add a scope word:\\nTRASH 1 DOMAIN — apply to everyone at that sender's domain\\nUNSUB 2 TYPE — apply to every email of that same kind (e.g. unsubscribe request, meeting request, pricing question)\\nTRASH 3 ONCE — just this once, do not learn a rule\\n\\nMANAGE LEARNED RULES:\\nReply RULES — I email you the full list of learned rules with their IDs\\nReply FORGET R123abc — delete that rule\\nReply FORGET ALL — delete every learned rule\\nThe agent will process your reply within the hour and send you a confirmation.";
-  sendNotification(\`🚩 \${flagged.length} email(s) need your attention\`, \`\${flagged.length} email(s) were flagged:\\n\\n\${lines}\\n\\nThese were NOT touched.\\n\\n\${instructions}\`, { hasFlagged: true });
+  const sent = sendNotification(\`🚩 \${flagged.length} email(s) need your attention [\${batchId}]\`, \`\${flagged.length} email(s) were flagged:\\n\\n\${lines}\\n\\nThese were NOT touched.\\n\\n\${instructions}\`, { hasFlagged: true });
+  if (sent) { storePendingFlagged(batchId, flagged); markThreadsFlagged(flagged); }
 }
 
 function sendNotification(subject, emailBody, opts) {
   const hasFlagged = opts && opts.hasFlagged;
   const freq = SETTINGS.notificationFrequency || "every-run";
-  if (freq === "action-only" && !hasFlagged) return;
-  if (freq === "daily" && new Date().getHours() !== 8) return;
-  try { GmailApp.sendEmail(SETTINGS.notificationEmail, subject, emailBody); } catch (e) {}
+  if (freq === "action-only" && !hasFlagged) return false;
+  if (freq === "daily" && new Date().getHours() !== 8) return false;
+  try { GmailApp.sendEmail(SETTINGS.notificationEmail, subject, emailBody); return true; } catch (e) { return false; }
 }
 
 function extractEmail(f) { const m = f.match(/<(.+?)>/); return m ? m[1].toLowerCase() : f.toLowerCase().trim(); }
@@ -275,22 +289,31 @@ function resetRules() { Rules.reset(); Logger.log("All learned rules deleted.");
 function stopAgent() { ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t)); Logger.log("Agent stopped."); }
 
 function checkForReplies() {
-  const threads = GmailApp.search('subject:"🚩 Gmail Agent" is:unread from:me', 0, 10);
-  if (threads.length === 0) return;
+  // Your own replies are never "unread", so track which ones were handled instead
+  const props = PropertiesService.getScriptProperties();
+  const done = JSON.parse(props.getProperty("processedReplies") || "[]");
+  const me = Session.getEffectiveUser().getEmail().toLowerCase();
+  const threads = GmailApp.search('subject:"need your attention" from:me newer_than:7d', 0, 10);
   for (const thread of threads) {
-    for (const msg of thread.getMessages()) {
-      if (!msg.isUnread()) continue;
-      if (msg.getFrom().toLowerCase().indexOf(Session.getActiveUser().getEmail().toLowerCase()) === -1) continue;
-      const body = msg.getPlainBody().toUpperCase();
+    const msgs = thread.getMessages();
+    // Message 0 is the agent's own flag email; only the replies after it carry commands
+    for (let i = 1; i < msgs.length; i++) {
+      const msg = msgs[i];
+      if (done.indexOf(msg.getId()) !== -1) continue;
+      if (msg.getFrom().toLowerCase().indexOf(me) === -1) continue;
+      const batch = (msg.getSubject() || "").match(/\\[(B[0-9A-Z]+)\\]/);
+      if (!batch) continue;
+      done.push(msg.getId());
+      // Only read what you typed — the quoted flag email contains example commands like "TRASH 1" and "FORGET ALL"
+      const body = stripQuotedReply(msg.getPlainBody()).toUpperCase();
       const ruleResults = handleRuleCommands(body);
       const commands = parseCommands(body);
       if (commands.length === 0) {
-        msg.markRead();
         if (ruleResults.length) GmailApp.sendEmail(SETTINGS.notificationEmail, "📘 Gmail Agent: rules updated", ruleResults.join("\\n") + "\\n\\n— Your Gmail AI Agent");
         continue;
       }
-      const stored = getPendingFlagged();
-      if (!stored || !stored.length) { msg.markRead(); continue; }
+      const stored = getPendingFlagged(batch[1]);
+      if (!stored || !stored.length) continue;
       const results = ruleResults.slice();
       for (const cmd of commands) {
         const index = cmd.number - 1;
@@ -309,11 +332,19 @@ function checkForReplies() {
           if (learned) results.push("   📘 Learned rule " + learned.rule_id + ": " + learned.pattern_type + " \\"" + learned.pattern_value + "\\" → " + learned.action + " (I won't ask again)");
         } catch(err) { results.push("❌ Error on email " + cmd.number + ": " + err.message); }
       }
-      msg.markRead();
       GmailApp.sendEmail(SETTINGS.notificationEmail, "✅ Gmail Agent: Commands processed", "Your agent processed your reply:\\n\\n" + results.join("\\n") + "\\n\\n— Your Gmail AI Agent");
-      clearPendingFlagged();
     }
   }
+  props.setProperty("processedReplies", JSON.stringify(done.slice(-200)));
+}
+
+// Cut a reply down to the part you typed, dropping the quoted email underneath
+function stripQuotedReply(body) {
+  const text = "\\n" + String(body || "");
+  const markers = [/\\n[ \\t]*On [^\\n]*(\\n[^\\n]*)?wrote:/i, /\\n[ \\t]*-{2,}[ \\t]*Original Message/i, /\\n[ \\t]*From:[ \\t]/i, /\\n[ \\t]*_{10,}/, /\\n[ \\t]*>/];
+  let cut = text.length;
+  markers.forEach(re => { const m = text.match(re); if (m && m.index < cut) cut = m.index; });
+  return text.substring(0, cut);
 }
 
 function parseCommands(text) {
@@ -347,8 +378,27 @@ function handleRuleCommands(text) {
   return out;
 }
 
-function storePendingFlagged(flagged) { PropertiesService.getScriptProperties().setProperty("pendingFlagged", JSON.stringify(flagged)); }
-function getPendingFlagged() { const raw = PropertiesService.getScriptProperties().getProperty("pendingFlagged"); return raw ? JSON.parse(raw) : []; }
-function clearPendingFlagged() { PropertiesService.getScriptProperties().deleteProperty("pendingFlagged"); }
+// Flag lists are kept per flag email (last 20), so you can reply to an older one and still hit the right emails
+function storePendingFlagged(batchId, flagged) {
+  const props = PropertiesService.getScriptProperties();
+  props.setProperty("pendingFlagged_" + batchId, JSON.stringify(flagged));
+  const ids = JSON.parse(props.getProperty("pendingBatches") || "[]");
+  ids.push(batchId);
+  while (ids.length > 20) props.deleteProperty("pendingFlagged_" + ids.shift());
+  props.setProperty("pendingBatches", JSON.stringify(ids));
+}
+function getPendingFlagged(batchId) { const raw = PropertiesService.getScriptProperties().getProperty("pendingFlagged_" + batchId); return raw ? JSON.parse(raw) : []; }
+
+// Threads already sent to you in a flag email, so they aren't flagged again every hour
+function loadFlaggedThreads() { try { return JSON.parse(PropertiesService.getScriptProperties().getProperty("flaggedThreads") || "{}"); } catch (e) { return {}; } }
+function wasFlagged(threadId) { return !!loadFlaggedThreads()[threadId]; }
+function markThreadsFlagged(flagged) {
+  const m = loadFlaggedThreads();
+  const now = Date.now();
+  const maxAge = (SETTINGS.lookbackDays + 1) * 86400000;
+  flagged.forEach(f => { if (f.threadId) m[f.threadId] = now; });
+  Object.keys(m).forEach(id => { if (now - m[id] > maxAge) delete m[id]; });
+  PropertiesService.getScriptProperties().setProperty("flaggedThreads", JSON.stringify(m));
+}
 `;
 }
