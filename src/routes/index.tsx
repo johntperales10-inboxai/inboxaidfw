@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { StageHero } from "@/components/inboxai/StageHero";
+import { Landing } from "@/components/inboxai/Landing";
+import landingCss from "@/components/inboxai/landing.css?url";
 import { StageForm } from "@/components/inboxai/StageForm";
 import { StageScript } from "@/components/inboxai/StageScript";
 import { generateScript, type AgentSettings } from "@/lib/generateScript";
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "InboxAI — Your Gmail inbox, managed by AI" },
       { property: "og:description", content: "A personal AI agent that lives inside your own Google account. Stars important emails, deletes spam, and unsubscribes you from forgotten newsletters." },
     ],
+    links: [{ rel: "stylesheet", href: landingCss }],
   }),
   component: Index,
 });
@@ -93,12 +95,16 @@ function Index() {
             email, or contact support if you already purchased.
           </p>
           <div className="mt-8 flex flex-col gap-3">
-            <a
-              href="https://johnperales.gumroad.com/l/xypgwz?wanted=true"
-              className="gumroad-button w-full px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium text-sm"
+            <button
+              onClick={async () => {
+                // Signing out swaps this screen for the landing page; then jump to its pricing
+                await handleSignOut();
+                setTimeout(() => document.getElementById("pricing")?.scrollIntoView(), 100);
+              }}
+              className="w-full px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium text-sm"
             >
-              Buy now — $50
-            </a>
+              See pricing
+            </button>
             <button
               onClick={() => { void handleSignOut(); void navigate({ to: "/" }); }}
               className="w-full px-6 py-3 rounded-xl border border-border text-sm"
@@ -119,10 +125,12 @@ function Index() {
     );
   }
 
+  // The landing page paints its own animated background, so it skips the app shell
+  if (stage === 1) return <Landing />;
+
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div key={stage} className="animate-in fade-in duration-500">
-        {stage === 1 && <StageHero onStart={() => go(2)} />}
         {stage === 2 && <StageForm onBack={() => go(1)} onSubmit={handleBuild} userEmail={user?.email ?? null} />}
         {stage === 3 && <StageScript script={script} onBack={() => go(2)} />}
       </div>

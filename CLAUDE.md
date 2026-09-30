@@ -15,6 +15,8 @@ vercel --prod
 
 ## Gotchas
 - Local `npm run build` fails on Windows (a `@lovable.dev/mcp-js` path check). Typecheck with `npx tsc --noEmit`; Vercel builds fine on Linux.
+- To preview locally anyway, run `npx vite dev --config <tmp config>` with a copy of vite.config.ts minus `mcpPlugin()` (don't commit it).
+- The home page (stage 1) is `src/components/inboxai/Landing.tsx` + `landing.css`, scoped under `.ib-landing`. Its resets sit in `@layer base`, because unlayered CSS would beat Tailwind's layered utilities.
 - After adding a route file, regenerate `src/routeTree.gen.ts` using `@tanstack/router-generator`, or tsc will fail.
 - `vite.config.ts` must keep `nitro: { preset: "vercel" }` and keep `cloudflare:workers` as an external.
 - This repo is public. Never hardcode discount codes, keys or secrets in client code. Stripe and Gumroad validate codes at checkout.

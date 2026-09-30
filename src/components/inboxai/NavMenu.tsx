@@ -30,7 +30,7 @@ export function NavMenu() {
   }, [open]);
 
   return (
-    <div ref={ref} className="fixed top-4 right-4 z-50">
+    <div ref={ref} className="ib-global-nav fixed top-4 right-4 z-50">
       <div className="flex items-center gap-2">
         <Link
           to="/premium" search={{ upgrade: undefined }}

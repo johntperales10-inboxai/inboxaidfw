@@ -29,12 +29,14 @@ export function useCheckout(tier: Tier) {
     setCodeError(null);
   };
 
-  const buy = async () => {
+  // codeOverride lets one shared code field drive several buy buttons
+  const buy = async (codeOverride?: string | null) => {
     if (busy) return;
+    const code = codeOverride !== undefined ? codeOverride : appliedCode;
     setBusy(true);
     setCodeError(null);
     try {
-      const r = await start({ data: { tier, code: appliedCode ?? undefined } });
+      const r = await start({ data: { tier, code: code ?? undefined } });
       if (r.url) {
         window.location.href = r.url;
         return;
@@ -50,8 +52,8 @@ export function useCheckout(tier: Tier) {
     }
     // Stripe not configured yet (or unreachable): Gumroad applies its own offer codes
     const base = GUMROAD_URLS[tier];
-    window.location.href = appliedCode
-      ? `${base}/${encodeURIComponent(appliedCode)}?wanted=true`
+    window.location.href = code
+      ? `${base}/${encodeURIComponent(code)}?wanted=true`
       : `${base}?wanted=true`;
   };
 
