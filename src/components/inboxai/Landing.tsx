@@ -335,6 +335,7 @@ export function Landing() {
           <p className="footer-text">
             InboxAI — Gmail AI automation · Keller, TX<br />
             Questions? <a href="mailto:inboxaidfw@gmail.com">inboxaidfw@gmail.com</a><br />
+            <Link to="/privacy">Privacy Policy</Link> · <Link to="/terms">Terms of Service</Link><br />
             Copyright © 2026 InboxAI. All rights reserved.
           </p>
         </div>
