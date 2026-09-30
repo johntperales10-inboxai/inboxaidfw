@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { Check, Sparkles } from "lucide-react";
 import {
@@ -7,6 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useCheckout } from "@/lib/useCheckout";
 
 
 
@@ -58,28 +58,13 @@ export const Route = createFileRoute("/premium")({
 
 function PremiumPage() {
   const { upgrade } = useSearch({ from: "/premium" });
-  const [discountCode, setDiscountCode] = useState("");
-  const [appliedCode, setAppliedCode] = useState<string | null>(null);
-  const [codeError, setCodeError] = useState<string | null>(null);
-
-  // Gumroad validates offer codes itself (/l/<product>/<code>), so no code is
-  // hardcoded here — anything in this file is readable by every visitor.
-  const handleApplyCode = () => {
-    const code = discountCode.replace(/\s/g, "").toUpperCase();
-    if (!code) return;
-    if (!/^[A-Z0-9_-]{2,64}$/.test(code)) {
-      setAppliedCode(null);
-      setCodeError("Codes only use letters, numbers, - and _.");
-      return;
-    }
-    setAppliedCode(code);
-    setCodeError(null);
-  };
-
-  const buyUrl = appliedCode
-    ? `https://johnperales.gumroad.com/l/gcmqik/${encodeURIComponent(appliedCode)}?wanted=true`
-    : "https://johnperales.gumroad.com/l/gcmqik?wanted=true";
-  const buyLabel = appliedCode ? "Continue to checkout with code →" : "Get InboxAI Premium — $97";
+  const { discountCode, onCodeChange, appliedCode, codeError, applyCode, buy, busy } =
+    useCheckout("premium");
+  const buyLabel = busy
+    ? "Opening checkout…"
+    : appliedCode
+      ? "Continue to checkout with code →"
+      : "Get InboxAI Premium — $97";
 
   return (
     <main className="min-h-screen bg-background text-foreground px-6 py-20">
@@ -144,12 +129,14 @@ function PremiumPage() {
 
         {/* CTA */}
         <div className="mt-14 flex flex-col items-center">
-          <a
-            href={buyUrl}
-            className="gumroad-button inline-flex items-center justify-center px-8 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/30"
+          <button
+            type="button"
+            onClick={() => void buy()}
+            disabled={busy}
+            className="inline-flex items-center justify-center px-8 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg shadow-primary/30 disabled:opacity-70"
           >
             {buyLabel}
-          </a>
+          </button>
           <p className="mt-3 text-center text-xs text-muted-foreground max-w-md">
             One time payment. No subscription. Includes everything in Basic plus the Priority Dashboard.
           </p>
@@ -163,14 +150,11 @@ function PremiumPage() {
               <input
                 type="text"
                 value={discountCode}
-                onChange={(e) => {
-                  setDiscountCode(e.target.value);
-                  if (codeError) setCodeError(null);
-                }}
+                onChange={(e) => onCodeChange(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    handleApplyCode();
+                    applyCode();
                   }
                 }}
                 placeholder="Enter your code here"
@@ -179,7 +163,7 @@ function PremiumPage() {
               />
               <button
                 type="button"
-                onClick={handleApplyCode}
+                onClick={applyCode}
                 className="h-11 px-4 rounded-md bg-primary text-primary-foreground text-sm font-semibold shadow-md shadow-primary/40 hover:opacity-90 transition-all"
               >
                 ✨ Apply

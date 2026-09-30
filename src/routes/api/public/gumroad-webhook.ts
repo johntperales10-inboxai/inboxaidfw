@@ -42,6 +42,21 @@ export const Route = createFileRoute("/api/public/gumroad-webhook")({
         }
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+        // One row per email: never let a later Basic purchase overwrite Premium
+        const isPremiumSale = [raw["product_name"], raw["product_permalink"], raw["variants"]]
+          .join(" ")
+          .toLowerCase()
+          .includes("premium");
+        if (!isPremiumSale) {
+          const { data: existing } = await supabaseAdmin
+            .from("purchases")
+            .select("email")
+            .eq("email", email)
+            .maybeSingle();
+          if (existing) return new Response("ok");
+        }
+
         const { error } = await supabaseAdmin.from("purchases").upsert(
           { email, source: "gumroad", order_id: orderId || null, raw },
           { onConflict: "email" },
