@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { startCheckout, type Tier } from "@/lib/checkout.functions";
+import { PREMIUM_ON_SALE } from "@/lib/features";
 
 const GUMROAD_URLS: Record<Tier, string> = {
   basic: "https://johnperales.gumroad.com/l/xypgwz",
@@ -32,6 +33,7 @@ export function useCheckout(tier: Tier) {
   // codeOverride lets one shared code field drive several buy buttons
   const buy = async (codeOverride?: string | null) => {
     if (busy) return;
+    if (tier === "premium" && !PREMIUM_ON_SALE) return;
     const code = codeOverride !== undefined ? codeOverride : appliedCode;
     setBusy(true);
     setCodeError(null);

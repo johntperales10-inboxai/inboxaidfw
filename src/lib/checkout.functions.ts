@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
+import { PREMIUM_ON_SALE } from "@/lib/features";
 
 export type Tier = "basic" | "premium";
 
@@ -32,6 +33,9 @@ export const startCheckout = createServerFn({ method: "POST" })
     return { tier: input.tier, code };
   })
   .handler(async ({ data }): Promise<CheckoutResult> => {
+    if (data.tier === "premium" && !PREMIUM_ON_SALE) {
+      return { url: null, error: "InboxAI Premium is coming soon." };
+    }
     const key = process.env.STRIPE_SECRET_KEY;
     const price =
       data.tier === "premium" ? process.env.STRIPE_PRICE_PREMIUM : process.env.STRIPE_PRICE_BASIC;

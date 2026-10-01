@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Reviews } from "./Reviews";
 import { useCheckout } from "@/lib/useCheckout";
+import { PREMIUM_ON_SALE } from "@/lib/features";
 
 const navLinks = [
   { label: "Features", href: "#features" },
@@ -272,17 +273,29 @@ export function Landing() {
               <p className="pricing-note">No subscription. No recurring charges. Ever.</p>
             </div>
             <div className="pricing-card pricing-premium">
-              <p className="pricing-label">Premium ✨</p>
+              <p className="pricing-label">Premium ✨{!PREMIUM_ON_SALE && " · Coming soon"}</p>
               <div className="pricing-price">$97</div>
               <p className="pricing-once">One time payment</p>
               <ul className="pricing-features">
                 {premiumFeatures.map((f) => <li key={f}>{f}</li>)}
               </ul>
-              <button type="button" className="btn-pill-dark" onClick={buyPremium} disabled={premium.busy}>{premiumLabel}</button>
-              <p className="pricing-note">
-                No subscription. No recurring charges. Ever. ·{" "}
-                <Link to="/premium" search={{ upgrade: undefined }}>See all Premium features ›</Link>
-              </p>
+              {PREMIUM_ON_SALE ? (
+                <>
+                  <button type="button" className="btn-pill-dark" onClick={buyPremium} disabled={premium.busy}>{premiumLabel}</button>
+                  <p className="pricing-note">
+                    No subscription. No recurring charges. Ever. ·{" "}
+                    <Link to="/premium" search={{ upgrade: undefined }}>See all Premium features ›</Link>
+                  </p>
+                </>
+              ) : (
+                <>
+                  <button type="button" className="btn-pill-dark" disabled>Coming soon</button>
+                  <p className="pricing-note">
+                    The Priority Dashboard is moving into your own Google account for extra privacy. Questions?{" "}
+                    <a href="mailto:inboxaidfw@gmail.com">inboxaidfw@gmail.com</a>
+                  </p>
+                </>
+              )}
             </div>
           </div>
 

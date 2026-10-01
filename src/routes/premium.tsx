@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useCheckout } from "@/lib/useCheckout";
+import { PREMIUM_ON_SALE } from "@/lib/features";
 
 
 
@@ -78,7 +79,7 @@ function PremiumPage() {
         <div className="flex justify-center">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/40 bg-primary/10 text-xs text-primary">
             <Sparkles className="size-3.5" />
-            New — InboxAI Premium
+            {PREMIUM_ON_SALE ? "New — InboxAI Premium" : "Coming soon — InboxAI Premium"}
           </span>
         </div>
 
@@ -128,6 +129,17 @@ function PremiumPage() {
         </div>
 
         {/* CTA */}
+        {!PREMIUM_ON_SALE ? (
+          <div className="mt-14 flex flex-col items-center text-center">
+            <span className="inline-flex items-center justify-center px-8 py-4 rounded-xl border border-primary/50 bg-primary/10 text-primary font-semibold text-base">
+              Premium is coming soon
+            </span>
+            <p className="mt-3 text-xs text-muted-foreground max-w-md">
+              We're moving the Priority Dashboard into your own Google account so your email never leaves it.
+              Want to hear when it's ready? Email inboxaidfw@gmail.com.
+            </p>
+          </div>
+        ) : (
         <div className="mt-14 flex flex-col items-center">
           <button
             type="button"
@@ -181,6 +193,7 @@ function PremiumPage() {
             )}
           </div>
         </div>
+        )}
 
         {/* FAQ */}
         <div className="mt-24 max-w-3xl mx-auto">
