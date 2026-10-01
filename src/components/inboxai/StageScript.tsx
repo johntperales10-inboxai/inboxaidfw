@@ -3,8 +3,16 @@ import { ArrowLeft, Check, Copy } from "lucide-react";
 
 interface Props {
   script: string;
+  premium?: boolean;
   onBack: () => void;
 }
+
+const dashboardSteps = [
+  "In the same script editor, click the blue Deploy button (top right) → New deployment.",
+  "Click the gear ⚙ next to “Select type” and choose Web app.",
+  "Set Execute as: Me, and Who has access: Only myself. Click Deploy, then Authorize access if Google asks.",
+  "Copy the Web app URL. That's your private Priority Inbox. Bookmark it, or save it on inboxaidfw.com/dashboard so it's one click away.",
+];
 
 const steps = [
   "Go to script.google.com and sign in with the same Google account as your Gmail. Click New project.",
@@ -14,7 +22,7 @@ const steps = [
   "To stop the agent any time, run stopAgent from the same dropdown. To fully remove access go to myaccount.google.com/permissions.",
 ];
 
-export function StageScript({ script, onBack }: Props) {
+export function StageScript({ script, premium = false, onBack }: Props) {
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
@@ -86,6 +94,32 @@ export function StageScript({ script, onBack }: Props) {
             ))}
           </div>
         </div>
+
+        {premium && (
+          <div className="mt-16 p-8 rounded-2xl bg-card border-2 border-primary/50">
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Premium ✨</p>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight">Open your Priority Inbox</h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              Your script includes the Priority Inbox dashboard. It runs inside your own Google account, so your
+              email never passes through our servers. Make sure your Gemini API key is filled in (it scores your
+              emails), then publish it as a private web app. This takes about 2 minutes.
+            </p>
+            <ol className="mt-6 space-y-3">
+              {dashboardSteps.map((s, i) => (
+                <li key={i} className="flex gap-4">
+                  <span className="size-7 shrink-0 rounded-full bg-primary/15 text-primary font-semibold text-sm flex items-center justify-center">
+                    {i + 1}
+                  </span>
+                  <span className="text-sm leading-relaxed text-foreground/90 pt-0.5">{s}</span>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-6 text-xs text-muted-foreground">
+              Changed your script later? Use Deploy → Manage deployments → ✎ Edit → Version: New version → Deploy, so the
+              dashboard picks up the change at the same address.
+            </p>
+          </div>
+        )}
 
         <div className="mt-16 p-8 rounded-2xl bg-card border border-primary/30">
           <h2 className="text-2xl font-bold tracking-tight">Your agent learns from your answers</h2>

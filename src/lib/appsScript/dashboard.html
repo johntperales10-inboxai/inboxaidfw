@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<base target="_top">
+<style>
+  :root {
+    --bg: #0f1117; --card: #1a1d27; --card-2: #141720; --border: #2a2f3d; --text: #eef1f8;
+    --muted: #8b93a7; --primary: #4f8ef7; --red: #f87171; --orange: #fb923c; --yellow: #facc15;
+    --green: #4ade80; --blue: #60a5fa;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 -apple-system, "Segoe UI", Inter, Roboto, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 20px 64px; }
+  header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  h1 { margin: 0; font-size: 32px; letter-spacing: -0.02em; }
+  .sub { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+  .tiny { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+  button { font: inherit; cursor: pointer; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 14px; }
+  .btn:hover { border-color: var(--primary); color: var(--primary); }
+  .btn:disabled { opacity: .6; cursor: progress; }
+  .summary { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .stat { padding: 16px; border-radius: 16px; background: var(--card); border: 1px solid var(--border); text-align: center; }
+  .stat b { display: block; font-size: 24px; }
+  .stat span { font-size: 12px; color: var(--muted); }
+  .banner { margin-top: 24px; padding: 16px 18px; border-radius: 16px; font-size: 14px; }
+  .banner.info { background: rgba(79,142,247,.1); border: 1px solid rgba(79,142,247,.35); color: var(--primary); }
+  .banner.warn { background: rgba(250,204,21,.08); border: 1px solid rgba(250,204,21,.35); color: var(--yellow); }
+  .banner.err { background: rgba(248,113,113,.08); border: 1px solid rgba(248,113,113,.35); color: var(--red); }
+  .sections { margin-top: 24px; display: flex; flex-direction: column; gap: 12px; }
+  .section { border-radius: 16px; background: var(--card); border: 1px solid var(--border); overflow: hidden; }
+  .section > button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: none; border: 0; color: var(--text); text-align: left; }
+  .section > button:hover { background: rgba(79,142,247,.06); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .section-title { font-weight: 600; }
+  .section-desc { font-size: 12px; color: var(--muted); }
+  .count { margin-left: auto; color: var(--muted); font-size: 14px; }
+  .chev { color: var(--muted); transition: transform .15s; }
+  .open .chev { transform: rotate(180deg); }
+  .items { padding: 0 20px 20px; display: flex; flex-direction: column; gap: 12px; }
+  .empty { font-size: 12px; color: var(--muted); margin: 0; }
+  .card { padding: 16px; border-radius: 12px; background: var(--card-2); border: 1px solid var(--border); }
+  .card.done { opacity: .55; }
+  .row { display: flex; justify-content: space-between; gap: 12px; }
+  .row .left { min-width: 0; }
+  .sender { margin: 0; font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sender small { color: var(--muted); font-weight: 400; }
+  .subject { margin: 4px 0 0; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .preview { margin: 4px 0 0; font-size: 12px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .right { text-align: right; flex-shrink: 0; }
+  .score { display: inline-block; padding: 3px 9px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; font-weight: 700; }
+  .s-high { color: var(--red); border-color: rgba(248,113,113,.4); background: rgba(248,113,113,.1); }
+  .s-mid { color: var(--orange); border-color: rgba(251,146,60,.4); background: rgba(251,146,60,.1); }
+  .s-low { color: var(--yellow); border-color: rgba(250,204,21,.4); background: rgba(250,204,21,.1); }
+  .ago { margin: 4px 0 0; font-size: 11px; color: var(--muted); }
+  .why { margin: 12px 0 0; font-size: 12px; color: var(--muted); }
+  .badges { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .badge { padding: 3px 8px; border-radius: 6px; font-size: 11px; border: 1px solid var(--border); color: var(--muted); }
+  .badge.action { color: var(--primary); border-color: rgba(79,142,247,.4); background: rgba(79,142,247,.1); }
+  .badge.deadline { color: var(--red); border-color: rgba(248,113,113,.4); background: rgba(248,113,113,.1); }
+  .flag { font-size: 11px; }
+  .actions { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .actions button { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: none; color: var(--text); font-size: 12px; }
+  .actions button:hover { border-color: var(--primary); color: var(--primary); }
+  .status { margin-top: 36px; padding: 14px 16px; border-radius: 16px; background: var(--card); border: 1px solid var(--border); display: flex; gap: 12px; align-items: center; font-size: 12px; color: var(--muted); }
+  .pulse { animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .45; } }
+  .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); padding: 10px 16px; border-radius: 10px; background: #2a1414; border: 1px solid rgba(248,113,113,.5); color: var(--red); font-size: 13px; }
+  @media (max-width: 560px) { h1 { font-size: 26px; } .summary { gap: 8px; } .section-desc { display: none; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>Priority Inbox</h1>
+      <p class="sub">AI has organized your emails by what actually matters</p>
+      <p class="tiny" id="updated">Loading…</p>
+    </div>
+    <button class="btn" id="refresh" type="button">↻ Refresh</button>
+  </header>
+
+  <div class="summary">
+    <div class="stat"><b id="n-unread">–</b><span>Total unread</span></div>
+    <div class="stat"><b id="n-action">–</b><span>Needing action</span></div>
+    <div class="stat"><b id="n-waiting">–</b><span>Waiting on others</span></div>
+  </div>
+
+  <div id="banners"></div>
+  <div class="sections" id="sections"></div>
+  <div class="status" id="agent"></div>
+</main>
+
+<script>
+  var SECTIONS = [
+    { id: "now", color: "var(--red)", title: "Needs Me Now", desc: "requires immediate attention" },
+    { id: "today", color: "var(--orange)", title: "Today", desc: "important today but not emergencies" },
+    { id: "this-week", color: "var(--yellow)", title: "This Week", desc: "handle soon" },
+    { id: "waiting", color: "var(--green)", title: "Waiting On Someone", desc: "you already replied" },
+    { id: "read-later", color: "var(--blue)", title: "Read Later", desc: "newsletters and promotions" },
+    { id: "archive", color: "#9ca3af", title: "Can Be Archived", desc: "safely ignorable" }
+  ];
+  var state = { rows: [], open: { now: true, today: true }, loading: false };
+
+  // Build DOM nodes safely: every string becomes a text node, never HTML.
+  function el(tag, attrs, children) {
+    var n = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      if (k === "class") n.className = attrs[k];
+      else if (k === "style") n.setAttribute("style", attrs[k]);
+      else if (k.indexOf("on") === 0) n.addEventListener(k.slice(2), attrs[k]);
+      else n.setAttribute(k, attrs[k]);
+    });
+    (children || []).forEach(function (c) {
+      if (c === null || c === undefined || c === false) return;
+      n.appendChild(typeof c === "string" || typeof c === "number" ? document.createTextNode(String(c)) : c);
+    });
+    return n;
+  }
+
+  function scoreClass(n) { return n >= 75 ? "s-high" : n >= 50 ? "s-mid" : n >= 25 ? "s-low" : ""; }
+  function timeAgo(iso) {
+    var mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    if (mins < 60) return Math.max(mins, 0) + "m ago";
+    if (mins < 1440) return Math.round(mins / 60) + "h ago";
+    return Math.round(mins / 1440) + "d ago";
+  }
+  function countdown(text) {
+    if (!text) return null;
+    var t = Date.parse(text);
+    if (isNaN(t)) return text;
+    var ms = t - Date.now();
+    if (ms <= 0) return "Overdue";
+    var h = Math.round(ms / 3600000);
+    return h < 48 ? h + "h left" : Math.round(h / 24) + "d left";
+  }
+  function statusLabel(s) {
+    return s === "needs-my-reply" ? "Needs My Reply" : s === "waiting-on-them" ? "Waiting On Them" : "No Action Needed";
+  }
+
+  function render() {
+    var visible = state.rows.filter(function (r) { return !r.removed; });
+    document.getElementById("n-unread").textContent = visible.filter(function (r) { return !r.waiting; }).length;
+    document.getElementById("n-action").textContent = visible.filter(function (r) { return r.score && r.score.actionRequired; }).length;
+    document.getElementById("n-waiting").textContent = visible.filter(function (r) { return r.waiting; }).length;
+
+    var box = document.getElementById("sections");
+    box.textContent = "";
+    SECTIONS.forEach(function (sec) {
+      var items = visible
+        .filter(function (r) { return ((r.score && r.score.section) || "read-later") === sec.id; })
+        .sort(function (a, b) { return ((b.score && b.score.importanceScore) || 0) - ((a.score && a.score.importanceScore) || 0); });
+      var isOpen = !!state.open[sec.id];
+      var head = el("button", { type: "button", onclick: function () { state.open[sec.id] = !isOpen; render(); } }, [
+        el("span", { class: "dot", style: "background:" + sec.color }),
+        el("span", { class: "section-title" }, [sec.title]),
+        el("span", { class: "section-desc" }, ["— " + sec.desc]),
+        el("span", { class: "count" }, [items.length]),
+        el("span", { class: "chev" }, ["▾"])
+      ]);
+      var body = isOpen ? el("div", { class: "items" }, items.length
+        ? items.map(card)
+        : [el("p", { class: "empty" }, ["Nothing here — you are all caught up"])]) : null;
+      box.appendChild(el("div", { class: "section" + (isOpen ? " open" : "") }, [head, body]));
+    });
+  }
+
+  function card(r) {
+    var s = r.score || {};
+    var dl = s.deadlineDetected ? countdown(s.deadlineText) : null;
+    var actions = [["star", "★ Star"], ["trash", "🗑 Trash"], ["archive", "Archive"], ["done", "✓ Mark Done"]];
+    return el("div", { class: "card" + (r.done ? " done" : "") }, [
+      el("div", { class: "row" }, [
+        el("div", { class: "left" }, [
+          el("p", { class: "sender" }, [r.senderName + " ", el("small", {}, ["· " + r.senderEmail])]),
+          el("p", { class: "subject" }, [r.subject]),
+          el("p", { class: "preview" }, [r.preview])
+        ]),
+        el("div", { class: "right" }, [
+          el("span", { class: "score " + scoreClass(s.importanceScore || 0) }, [r.score ? s.importanceScore : "—"]),
+          el("p", { class: "ago" }, [timeAgo(r.receivedAt)])
+        ])
+      ]),
+      s.explanation ? el("p", { class: "why" }, [s.explanation]) : null,
+      el("div", { class: "badges" }, [
+        r.score ? el("span", { class: "badge" }, [statusLabel(s.waitingStatus)]) : null,
+        s.actionRequired ? el("span", { class: "badge action" }, ["Action required"]) : null,
+        s.deadlineDetected ? el("span", { class: "badge deadline" }, ["Deadline" + (dl ? ": " + dl : "") + (s.deadlineText && dl !== s.deadlineText ? " — " + s.deadlineText : "")]) : null,
+        r.starred ? el("span", { class: "flag", style: "color:var(--yellow)" }, ["★ Starred"]) : null,
+        r.done ? el("span", { class: "flag", style: "color:var(--green)" }, ["Marked done"]) : null
+      ]),
+      el("div", { class: "actions" }, actions.map(function (a) {
+        return el("button", { type: "button", onclick: function () { act(r, a[0]); } }, [a[1]]);
+      }))
+    ]);
+  }
+
+  function act(r, action) {
+    var before = { starred: r.starred, done: r.done, removed: r.removed };
+    if (action === "star") r.starred = true;
+    else if (action === "done") r.done = true;
+    else r.removed = true;
+    render();
+    google.script.run
+      .withFailureHandler(function (e) {
+        r.starred = before.starred; r.done = before.done; r.removed = before.removed;
+        render();
+        toast("Couldn't " + action + " that email: " + (e && e.message ? e.message : e));
+      })
+      .dashboardAction(r.id, action);
+  }
+
+  function toast(msg) {
+    var t = el("div", { class: "toast" }, [msg]);
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, 4000);
+  }
+
+  function setBanners(list) {
+    var b = document.getElementById("banners");
+    b.textContent = "";
+    list.forEach(function (x) { b.appendChild(el("div", { class: "banner " + x[0] + (x[2] ? " pulse" : "") }, [x[1]])); });
+  }
+
+  function setAgent(lastRunIso) {
+    var a = document.getElementById("agent");
+    a.textContent = "";
+    var last = lastRunIso ? new Date(lastRunIso) : null;
+    var stale = !last || Date.now() - last.getTime() > 2 * 3600000;
+    a.appendChild(el("span", { class: "dot" + (stale ? "" : " pulse"), style: "width:10px;height:10px;background:" + (stale ? "var(--red)" : "var(--green)") }));
+    a.appendChild(document.createTextNode(stale
+      ? "Background agent: hasn't run in the last 2 hours. In the script editor, run setupTrigger once to start it."
+      : "Background agent: active — last ran " + last.toLocaleTimeString() + ", next run in about an hour."));
+  }
+
+  function load() {
+    if (state.loading) return;
+    state.loading = true;
+    var btn = document.getElementById("refresh");
+    btn.disabled = true;
+    setBanners([["info", "AI is reading your inbox — this can take up to a minute the first time.", true]]);
+    google.script.run
+      .withSuccessHandler(function (res) {
+        state.loading = false; btn.disabled = false;
+        state.rows = (res && res.rows) || [];
+        document.getElementById("updated").textContent = "Last updated " + new Date(res.updatedAt).toLocaleTimeString();
+        setBanners(res.aiAvailable ? [] : [["warn", "AI scoring was unavailable for some emails. Check that your Gemini API key in the script's SETTINGS is correct, then press Refresh."]]);
+        setAgent(res.agentLastRun);
+        render();
+      })
+      .withFailureHandler(function (e) {
+        state.loading = false; btn.disabled = false;
+        setBanners([["err", "Couldn't load your inbox: " + (e && e.message ? e.message : e)]]);
+      })
+      .getPriorityInbox();
+  }
+
+  document.getElementById("refresh").addEventListener("click", load);
+  render();
+  load();
+</script>
+</body>
+</html>

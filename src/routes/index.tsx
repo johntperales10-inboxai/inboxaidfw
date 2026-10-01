@@ -8,7 +8,7 @@ import landingCss from "@/components/inboxai/landing.css?url";
 import { StageForm } from "@/components/inboxai/StageForm";
 import { StageScript } from "@/components/inboxai/StageScript";
 import { generateScript, type AgentSettings } from "@/lib/generateScript";
-import { checkMyPurchase } from "@/lib/purchases.functions";
+import { checkMyPurchase, checkMyPremium } from "@/lib/purchases.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,6 +33,9 @@ function Index() {
   const [hasAutoAdvanced, setHasAutoAdvanced] = useState(false);
   const navigate = useNavigate();
   const check = useServerFn(checkMyPurchase);
+  const checkPremium = useServerFn(checkMyPremium);
+  // Premium buyers get the Priority Inbox dashboard built into their script
+  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -50,8 +53,11 @@ function Index() {
     check()
       .then((r) => { if (!cancelled) setPurchase(r.hasPurchase ? "verified" : "missing"); })
       .catch(() => { if (!cancelled) setPurchase("missing"); });
+    checkPremium()
+      .then((r) => { if (!cancelled) setIsPremium(r.isPremium); })
+      .catch(() => { if (!cancelled) setIsPremium(false); });
     return () => { cancelled = true; };
-  }, [user, check]);
+  }, [user, check, checkPremium]);
 
   // After OAuth redirect back, advance to stage 2 only if purchase is verified.
   useEffect(() => {
@@ -66,7 +72,7 @@ function Index() {
     if (purchase !== "verified") {
       return "We could not verify your purchase. Please make sure you signed in with the same Google account you used to buy on Gumroad. If you need help email johntperales10@gmail.com";
     }
-    setScript(generateScript(s));
+    setScript(generateScript(s, { premium: isPremium }));
     setStage(3);
     window.scrollTo({ top: 0, behavior: "instant" });
   };
@@ -132,7 +138,7 @@ function Index() {
     <main className="min-h-screen bg-background text-foreground">
       <div key={stage} className="animate-in fade-in duration-500">
         {stage === 2 && <StageForm onBack={() => go(1)} onSubmit={handleBuild} userEmail={user?.email ?? null} />}
-        {stage === 3 && <StageScript script={script} onBack={() => go(2)} />}
+        {stage === 3 && <StageScript script={script} premium={isPremium} onBack={() => go(2)} />}
       </div>
     </main>
   );

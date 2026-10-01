@@ -56,10 +56,11 @@ function PrivacyPage() {
       <section>
         <h2>The Priority Dashboard (Premium)</h2>
         <p>
-          If you use the Premium dashboard, it reads your unread Gmail messages with your permission and sends each
-          message’s sender, subject, and a short preview to our server so an AI model (Google Gemini, through our AI
-          provider) can score how important it is. These excerpts are processed to produce the scores and are
-          not stored by us.
+          The Premium Priority Inbox is part of your Gmail agent script and runs as a private web app inside your own
+          Google account (only you can open it). To score how important each unread email is, it sends the sender,
+          subject, and a short preview to Google’s Gemini AI using your own API key. InboxAI does not receive or store
+          your emails or the scores. Our website only remembers your dashboard’s web address in your browser so you
+          can open it in one click.
         </p>
         <p>
           InboxAI’s use and transfer of information received from Google APIs adheres to the{" "}

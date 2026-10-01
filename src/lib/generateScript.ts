@@ -1,3 +1,6 @@
+import dashboardGs from "./appsScript/dashboard.gs?raw";
+import dashboardHtml from "./appsScript/dashboard.html?raw";
+
 export type NotificationFrequency = "action-only" | "daily" | "every-run";
 
 export interface AgentSettings {
@@ -10,7 +13,13 @@ export interface AgentSettings {
   notificationEmail?: string;
 }
 
-export function generateScript(s: AgentSettings): string {
+// Premium adds the Priority Inbox dashboard, served by the customer's own script
+// (Apps Script web app), so Gmail is never read through our servers.
+function premiumDashboardModule(): string {
+  return `${dashboardGs}\nconst DASHBOARD_HTML = ${JSON.stringify(dashboardHtml)};\n`;
+}
+
+export function generateScript(s: AgentSettings, opts: { premium?: boolean } = {}): string {
   const senders = s.trustedSenders
     .map((e) => e.trim())
     .filter(Boolean)
@@ -27,7 +36,7 @@ export function generateScript(s: AgentSettings): string {
 
   const trustedDomainsLiteral = domains.length > 0 ? `[\n${domains}\n  ]` : "[]";
 
-  return `// ============================================================
+  const script = `// ============================================================
 //  GMAIL AI AGENT — your custom build
 //  Paste into script.google.com → New project → Run setupTrigger
 // ============================================================
@@ -172,6 +181,7 @@ function setupTrigger() {
 }
 
 function runAgent() {
+  PropertiesService.getScriptProperties().setProperty("lastRunAt", new Date().toISOString());
   checkForReplies();
   const flagged = [], actioned = [];
   processTrustedSenders(actioned);
@@ -401,4 +411,5 @@ function markThreadsFlagged(flagged) {
   PropertiesService.getScriptProperties().setProperty("flaggedThreads", JSON.stringify(m));
 }
 `;
+  return opts.premium ? script + premiumDashboardModule() : script;
 }
