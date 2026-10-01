@@ -51,6 +51,7 @@ const premiumFeatures = [
   "Everything in Basic",
   "AI importance scores for every email",
   "Priority Dashboard — 6 intelligent sections",
+  "Dashboard runs privately in your own Google account",
   "Real person detection",
   "Deadline alerts",
   "Full inbox organized by importance",

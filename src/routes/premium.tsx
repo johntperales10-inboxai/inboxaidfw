@@ -22,6 +22,7 @@ const basic = [
 const premium = [
   "Everything in Basic",
   "Priority Dashboard with AI scores",
+  "Private by design — the dashboard runs inside your own Google account, so your email never leaves it",
   "Dynamic importance scoring 0 to 100 for every email",
   "Emails organized into 6 intelligent sections",
   "Explainable AI — see exactly why each email was scored",
