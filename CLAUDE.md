@@ -9,9 +9,13 @@ InboxAI is a paid Gmail AI agent: a setup wizard that generates a Google Apps Sc
 ## Deploy
 ```
 git pull
-git add <files> && git commit -m "..." && git push
-vercel --prod
+git add <files> && git commit -m "..." && git push   # Vercel auto-deploys main
 ```
+
+## Database
+- Production (www.inboxaidfw.com on Vercel) uses Supabase project `marysqnxyqjcgrnnxgyx` (Google sign-in is configured there). Vercel env vars point at it.
+- `supabase/config.toml` and the committed `.env` still name the Lovable project `ukhdsaxoqgoeqwaioxir`, which only the lovable.app preview uses.
+- Apply new migrations to production with `npx supabase db query --linked --project-ref marysqnxyqjcgrnnxgyx -f <file>`.
 
 ## Gotchas
 - Local `npm run build` fails on Windows (a `@lovable.dev/mcp-js` path check). Typecheck with `npx tsc --noEmit`; Vercel builds fine on Linux.
