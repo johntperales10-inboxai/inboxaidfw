@@ -24,7 +24,10 @@ type CheckoutSession = {
   customer_email: string | null;
   customer_details?: { email?: string | null } | null;
   metadata?: Record<string, string> | null;
+  payment_intent?: string | null;
 };
+
+type Charge = { payment_intent: string | null; amount: number; amount_refunded: number; refunded: boolean };
 
 export const Route = createFileRoute("/api/public/stripe-webhook")({
   server: {
@@ -40,6 +43,24 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
         }
 
         const event = JSON.parse(rawBody) as { type: string; data: { object: CheckoutSession } };
+
+        // A full refund removes access. Partial refunds (e.g. goodwill credits) keep it.
+        if (event.type === "charge.refunded") {
+          const charge = event.data.object as unknown as Charge;
+          if (!charge.refunded || !charge.payment_intent) return new Response("ignored");
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { error } = await supabaseAdmin
+            .from("purchases")
+            .delete()
+            .eq("source", "stripe")
+            .eq("raw->>payment_intent", charge.payment_intent);
+          if (error) {
+            console.error("stripe refund revoke failed", error);
+            return new Response("Server error", { status: 500 });
+          }
+          return new Response("ok");
+        }
+
         const unlocks =
           event.type === "checkout.session.async_payment_succeeded" ||
           (event.type === "checkout.session.completed" &&
@@ -77,6 +98,8 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
               product_name: tier === "premium" ? "InboxAI Premium" : "InboxAI Basic",
               amount_total: session.amount_total,
               currency: session.currency,
+              // Lets a later charge.refunded event find this purchase
+              payment_intent: session.payment_intent ?? null,
             },
           },
           { onConflict: "email" },

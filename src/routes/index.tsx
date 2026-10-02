@@ -70,7 +70,7 @@ function Index() {
 
   const handleBuild = (s: AgentSettings): string | void => {
     if (purchase !== "verified") {
-      return "We could not verify your purchase. Please make sure you signed in with the same Google account you used to buy on Gumroad. If you need help email johntperales10@gmail.com";
+      return "We could not verify your purchase. Please make sure you signed in with the Google account for the email you used at checkout. If you need help, email inboxaidfw@gmail.com";
     }
     setScript(generateScript(s, { premium: isPremium }));
     setStage(3);
@@ -97,7 +97,7 @@ function Index() {
           <h1 className="text-2xl font-bold tracking-tight">We couldn't find your purchase</h1>
           <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
             You're signed in as <span className="font-medium text-foreground">{user.email}</span>, but no
-            InboxAI purchase is on file for this email. Please buy access on Gumroad using this same
+            InboxAI purchase is on file for this email. Please buy access using this same
             email, or contact support if you already purchased.
           </p>
           <div className="mt-8 flex flex-col gap-3">
