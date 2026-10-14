@@ -31,6 +31,7 @@ git add <files> && git commit -m "..." && git push   # Vercel auto-deploys main
 - `src/routes/api/public/stripe-webhook.ts`, `gumroad-webhook.ts`: record purchases in the Supabase `purchases` table and never downgrade Premium.
 - `src/lib/purchases.functions.ts`: `isPremiumUser` / `checkMyPremium`, enforced on the server by `dashboard.functions.ts`.
 
-## Status (2026-09-29)
-- Stripe code is shipped but inactive until these are set in Vercel: `STRIPE_SECRET_KEY`, `STRIPE_PRICE_BASIC`, `STRIPE_PRICE_PREMIUM`, `STRIPE_WEBHOOK_SECRET`. Webhook URL: `/api/public/stripe-webhook`, events `checkout.session.completed` and `checkout.session.async_payment_succeeded`.
-- To do: turn off the old public Gumroad codes; activate Stripe; run a full QA pass on the reply-command system.
+## Status (2026-10-14)
+- Premium is on sale. Its dashboard runs as an Apps Script web app inside the customer’s own Google account (`src/lib/appsScript/`), gated by `PREMIUM_ON_SALE` in `src/lib/features.ts`.
+- Stripe live mode is configured in Vercel (products, webhook at `/api/public/stripe-webhook`, env vars), but the Stripe account is paused pending identity verification by an adult account representative and a payout bank account. Until then, paid checkout fails and the site falls back to Gumroad automatically; no code change is needed once the account is activated.
+- To do: activate the Stripe account; run a $0 live end-to-end checkout test; reduce the restricted API key to the minimum permissions; turn off the old public Gumroad codes; full QA pass on the reply-command system.
