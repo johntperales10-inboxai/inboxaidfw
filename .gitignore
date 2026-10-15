@@ -30,3 +30,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.vercel
+.env*
+
+# Local-only files (repo is public)
+supabase/.temp/
+supabase/*.pdf
