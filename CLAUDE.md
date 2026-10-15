@@ -23,6 +23,7 @@ git add <files> && git commit -m "..." && git push   # Vercel auto-deploys main
 - The home page (stage 1) is `src/components/inboxai/Landing.tsx` + `landing.css`, scoped under `.ib-landing`. Its resets sit in `@layer base`, because unlayered CSS would beat Tailwind's layered utilities.
 - After adding a route file, regenerate `src/routeTree.gen.ts` using `@tanstack/router-generator`, or tsc will fail.
 - `vite.config.ts` must keep `nitro: { preset: "vercel" }` and keep `cloudflare:workers` as an external.
+- No emojis in website copy, labels or decorative icons (the owner says they make the site look fake). Plain UI symbols like ★, ✓, ☰ and arrows are fine.
 - This repo is public. Never hardcode discount codes, keys or secrets in client code. Stripe and Gumroad validate codes at checkout.
 
 ## Key files

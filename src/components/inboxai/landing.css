@@ -221,7 +221,8 @@
 }
 .ib-landing .tile-dark .tile-headline, .ib-landing .tile-black .tile-headline { color: #f5f5f7; }
 .ib-landing .tile-light .tile-headline, .ib-landing .tile-white .tile-headline { color: var(--text); }
-.ib-landing .tile-body { font-size: 19px; font-weight: 300; line-height: 1.42; max-width: 520px; margin: 0 auto 30px; }
+/* Body text is a little bigger where the emoji used to sit */
+.ib-landing .tile-body { font-size: clamp(19px, 2vw, 22px); font-weight: 300; line-height: 1.42; max-width: 600px; margin: 0 auto 30px; }
 .ib-landing .tile-dark .tile-body, .ib-landing .tile-black .tile-body { color: #a1a1a6; }
 .ib-landing .tile-light .tile-body, .ib-landing .tile-white .tile-body { color: var(--text-2); }
 .ib-landing .tile-links { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
@@ -229,7 +230,6 @@
 .ib-landing .tile-links a:hover { opacity: 0.7; }
 .ib-landing .tile-dark .tile-links a, .ib-landing .tile-black .tile-links a { color: var(--blue-bright); }
 .ib-landing .tile-light .tile-links a, .ib-landing .tile-white .tile-links a { color: var(--blue); }
-.ib-landing .tile-icon { font-size: 72px; margin: 48px auto 0; display: block; line-height: 1; }
 
 /* ── PROBLEM ── */
 .ib-landing .problem-section { background: rgba(0, 3, 12, 0.88); padding: 88px 22px; text-align: center; }
@@ -245,9 +245,8 @@
 }
 .ib-landing .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
 .ib-landing .problem-card { background: rgba(16, 18, 38, 0.68); border-radius: 18px; padding: 32px 24px; text-align: left; border: 1px solid rgba(55, 65, 115, 0.5); }
-.ib-landing .problem-icon { font-size: 28px; margin-bottom: 14px; display: block; }
-.ib-landing .problem-title { font-size: 19px; font-weight: 600; color: #f5f5f7; margin-bottom: 8px; letter-spacing: -0.01em; }
-.ib-landing .problem-body { font-size: 14px; color: #a1a1a6; line-height: 1.5; }
+.ib-landing .problem-title { font-size: 22px; font-weight: 600; color: #f5f5f7; margin-bottom: 8px; letter-spacing: -0.01em; }
+.ib-landing .problem-body { font-size: 16px; color: #a1a1a6; line-height: 1.5; }
 
 /* ── SETUP ── */
 .ib-landing .setup-section { background: var(--surface); padding: 88px 22px; border-top: 1px solid var(--border); backdrop-filter: blur(2px); }

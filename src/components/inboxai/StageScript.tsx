@@ -97,7 +97,7 @@ export function StageScript({ script, premium = false, onBack }: Props) {
 
         {premium && (
           <div className="mt-16 p-8 rounded-2xl bg-card border-2 border-primary/50">
-            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Premium ✨</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Premium</p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight">Open your Priority Inbox</h2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               Your script includes the Priority Inbox dashboard. It runs inside your own Google account, so your

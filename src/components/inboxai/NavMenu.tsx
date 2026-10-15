@@ -36,7 +36,7 @@ export function NavMenu() {
           to="/premium" search={{ upgrade: undefined }}
           className="h-9 px-3 rounded-lg border border-primary/50 bg-card/90 backdrop-blur text-primary text-xs font-medium flex items-center hover:border-primary hover:bg-primary/10 transition-colors shadow-lg"
         >
-          Premium ✨
+          Premium
         </Link>
         <button
           type="button"

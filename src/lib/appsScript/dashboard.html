@@ -169,7 +169,7 @@
   function card(r) {
     var s = r.score || {};
     var dl = s.deadlineDetected ? countdown(s.deadlineText) : null;
-    var actions = [["star", "★ Star"], ["trash", "🗑 Trash"], ["archive", "Archive"], ["done", "✓ Mark Done"]];
+    var actions = [["star", "★ Star"], ["trash", "Trash"], ["archive", "Archive"], ["done", "✓ Mark Done"]];
     return el("div", { class: "card" + (r.done ? " done" : "") }, [
       el("div", { class: "row" }, [
         el("div", { class: "left" }, [

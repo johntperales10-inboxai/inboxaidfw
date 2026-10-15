@@ -14,21 +14,21 @@ const inboxRows = [
   { starred: true, sender: "Mom", subject: "Don't forget dinner Sunday — we're having...", badge: "star", label: "Trusted" },
   { starred: true, sender: "Coach Rivera", subject: "Practice schedule update for next week", badge: "star", label: "Trusted" },
   { starred: false, sender: "LinkedIn", subject: "You have 14 new connection requests waiting...", badge: "news", label: "Newsletter" },
-  { starred: false, sender: "no-reply@promo", subject: "🔥 LAST CHANCE 80% off everything ends at...", badge: "spam", label: "Spam" },
+  { starred: false, sender: "no-reply@promo", subject: "LAST CHANCE 80% off everything ends at...", badge: "spam", label: "Spam" },
   { starred: true, sender: "Jake", subject: "Hey are you coming to the game Friday night?", badge: "star", label: "Trusted" },
 ];
 
 const tiles = [
-  { tone: "tile-dark", eyebrow: "Stars important emails", title: ["The people who matter", "always rise to the top."], body: "Tell the AI who you trust. It learns your network and makes sure every email from a real person in your life gets starred and stays visible.", icon: "⭐" },
-  { tone: "tile-white", eyebrow: "Clears spam automatically", title: ["Spam gone", "every hour. On the dot."], body: "AI reads and categorizes every incoming email. Anything it identifies as spam disappears — quietly, automatically, every 60 minutes. You never see it.", icon: "🗑" },
-  { tone: "tile-black", eyebrow: "Unsubscribes for you", title: ["Newsletters you forgot", "you signed up for."], body: "The ones piling up from three years ago. The brand you bought from once. The AI finds them and unsubscribes — no action required from you.", icon: "📭" },
-  { tone: "tile-light", eyebrow: "Email alerts when unsure", title: ["It asks when", "it needs you."], body: "When the AI finds something it can't confidently categorize, it emails you directly. You decide. It learns. Gets smarter every time.", icon: "🔔" },
+  { tone: "tile-dark", eyebrow: "Stars important emails", title: ["The people who matter", "always rise to the top."], body: "Tell the AI who you trust. It learns your network and makes sure every email from a real person in your life gets starred and stays visible." },
+  { tone: "tile-white", eyebrow: "Clears spam automatically", title: ["Spam gone", "every hour. On the dot."], body: "AI reads and categorizes every incoming email. Anything it identifies as spam disappears — quietly, automatically, every 60 minutes. You never see it." },
+  { tone: "tile-black", eyebrow: "Unsubscribes for you", title: ["Newsletters you forgot", "you signed up for."], body: "The ones piling up from three years ago. The brand you bought from once. The AI finds them and unsubscribes — no action required from you." },
+  { tone: "tile-light", eyebrow: "Email alerts when unsure", title: ["It asks when", "it needs you."], body: "When the AI finds something it can't confidently categorize, it emails you directly. You decide. It learns. Gets smarter every time." },
 ];
 
 const problems = [
-  { icon: "😤", title: "Real emails get buried", body: "A message from a friend, a teacher, someone who matters — gone under 40 promotional emails you never asked for." },
-  { icon: "🤯", title: "Spam never stops", body: "You delete it, it comes back. You unsubscribe, three more replace it. The inbox was not designed to fight this for you." },
-  { icon: "⏳", title: "You do it manually", body: "Sorting, starring, unsubscribing — all of it on you, all of it taking time away from things that actually matter." },
+  { title: "Real emails get buried", body: "A message from a friend, a teacher, someone who matters — gone under 40 promotional emails you never asked for." },
+  { title: "Spam never stops", body: "You delete it, it comes back. You unsubscribe, three more replace it. The inbox was not designed to fight this for you." },
+  { title: "You do it manually", body: "Sorting, starring, unsubscribing — all of it on you, all of it taking time away from things that actually matter." },
 ];
 
 const steps = [
@@ -157,7 +157,7 @@ export function Landing() {
             <li><Link to="/signin">Sign in</Link></li>
           </ul>
           <div className="nav-right">
-            <a className="nav-premium" href="#pricing">Premium ✨</a>
+            <a className="nav-premium" href="#pricing">Premium</a>
             <button
               type="button"
               className="nav-burger"
@@ -176,7 +176,7 @@ export function Landing() {
               <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)}>{l.label}</a>
             ))}
             <Link to="/signin" onClick={() => setMenuOpen(false)}>Sign in</Link>
-            <a href="#pricing" onClick={() => setMenuOpen(false)}>Premium ✨</a>
+            <a href="#pricing" onClick={() => setMenuOpen(false)}>Premium</a>
           </div>
         )}
       </nav>
@@ -222,7 +222,6 @@ export function Landing() {
             <h2 className="tile-headline">{t.title[0]}<br />{t.title[1]}</h2>
             <p className="tile-body">{t.body}</p>
             <div className="tile-links"><a href="#setup">Learn more</a></div>
-            <span className="tile-icon" aria-hidden="true">{t.icon}</span>
           </div>
         </section>
       ))}
@@ -233,7 +232,6 @@ export function Landing() {
           <div className="problem-grid">
             {problems.map((p) => (
               <div className="problem-card" key={p.title}>
-                <span className="problem-icon" aria-hidden="true">{p.icon}</span>
                 <h3 className="problem-title">{p.title}</h3>
                 <p className="problem-body">{p.body}</p>
               </div>
@@ -274,7 +272,7 @@ export function Landing() {
               <p className="pricing-note">No subscription. No recurring charges. Ever.</p>
             </div>
             <div className="pricing-card pricing-premium">
-              <p className="pricing-label">Premium ✨{!PREMIUM_ON_SALE && " · Coming soon"}</p>
+              <p className="pricing-label">Premium{!PREMIUM_ON_SALE && " · Coming soon"}</p>
               <div className="pricing-price">$97</div>
               <p className="pricing-once">One time payment</p>
               <ul className="pricing-features">

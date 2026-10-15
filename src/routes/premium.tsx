@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
-import { Check, Sparkles } from "lucide-react";
+import { Check } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -79,7 +79,6 @@ function PremiumPage() {
 
         <div className="flex justify-center">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/40 bg-primary/10 text-xs text-primary">
-            <Sparkles className="size-3.5" />
             {PREMIUM_ON_SALE ? "New — InboxAI Premium" : "Coming soon — InboxAI Premium"}
           </span>
         </div>
@@ -179,7 +178,7 @@ function PremiumPage() {
                 onClick={applyCode}
                 className="h-11 px-4 rounded-md bg-primary text-primary-foreground text-sm font-semibold shadow-md shadow-primary/40 hover:opacity-90 transition-all"
               >
-                ✨ Apply
+                Apply
               </button>
             </div>
             {appliedCode && (

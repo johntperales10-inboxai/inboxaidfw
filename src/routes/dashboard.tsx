@@ -91,7 +91,7 @@ function DashboardPage() {
   return (
     <main className="min-h-screen bg-background text-foreground px-6 py-20">
       <div className="max-w-2xl mx-auto">
-        <p className="text-xs font-semibold uppercase tracking-wider text-primary">InboxAI Premium ✨</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-primary">InboxAI Premium</p>
         <h1 className="mt-3 text-4xl font-bold tracking-tight">Your Priority Inbox</h1>
         <p className="mt-4 text-muted-foreground leading-relaxed">
           Every unread email scored 0–100 and sorted into what needs you now, today, this week, and what can wait.
