@@ -201,12 +201,28 @@
 .ib-landing .badge-star { background: #2a2a1c; color: #f5c518; }
 
 /* ── TILES ── */
-.ib-landing .tile { padding: 88px 22px; text-align: center; }
+.ib-landing .tile { padding: 108px 22px; text-align: center; }
 .ib-landing .tile-inner { max-width: 980px; margin: 0 auto; }
-.ib-landing .tile-dark { background: rgba(6, 10, 26, 0.78); }
-.ib-landing .tile-black { background: rgba(0, 3, 12, 0.88); }
-.ib-landing .tile-light { background: var(--surface); }
-.ib-landing .tile-white { background: var(--bg); border-top: 1px solid var(--border); }
+.ib-landing .tile-dark {
+  background: linear-gradient(to bottom,
+    transparent 0, rgba(5, 10, 32, 0.90) 96px,
+    rgba(5, 10, 32, 0.90) calc(100% - 96px), transparent 100%);
+}
+.ib-landing .tile-black {
+  background: linear-gradient(to bottom,
+    transparent 0, rgba(3, 7, 22, 0.93) 96px,
+    rgba(3, 7, 22, 0.93) calc(100% - 96px), transparent 100%);
+}
+.ib-landing .tile-light {
+  background: linear-gradient(to bottom,
+    transparent 0, rgba(6, 14, 46, 0.88) 96px,
+    rgba(6, 14, 46, 0.88) calc(100% - 96px), transparent 100%);
+}
+.ib-landing .tile-white {
+  background: linear-gradient(to bottom,
+    transparent 0, rgba(7, 15, 50, 0.87) 96px,
+    rgba(7, 15, 50, 0.87) calc(100% - 96px), transparent 100%);
+}
 .ib-landing .tile-eyebrow { font-size: 14px; font-weight: 600; margin-bottom: 10px; letter-spacing: 0.05em; text-transform: uppercase; }
 .ib-landing .tile-dark .tile-eyebrow, .ib-landing .tile-black .tile-eyebrow { color: var(--blue-bright); }
 .ib-landing .tile-light .tile-eyebrow, .ib-landing .tile-white .tile-eyebrow { color: var(--blue); }
@@ -232,7 +248,13 @@
 .ib-landing .tile-light .tile-links a, .ib-landing .tile-white .tile-links a { color: var(--blue); }
 
 /* ── PROBLEM ── */
-.ib-landing .problem-section { background: rgba(0, 3, 12, 0.88); padding: 88px 22px; text-align: center; }
+.ib-landing .problem-section {
+  background: linear-gradient(to bottom,
+    transparent 0, rgba(4, 9, 28, 0.91) 96px,
+    rgba(4, 9, 28, 0.91) calc(100% - 96px), transparent 100%);
+  padding: 108px 22px;
+  text-align: center;
+}
 .ib-landing .problem-inner { max-width: 980px; margin: 0 auto; }
 .ib-landing .problem-headline {
   font-family: -apple-system, "SF Pro Display", Inter, "Helvetica Neue", sans-serif;
@@ -249,7 +271,13 @@
 .ib-landing .problem-body { font-size: 16px; color: #a1a1a6; line-height: 1.5; }
 
 /* ── SETUP ── */
-.ib-landing .setup-section { background: var(--surface); padding: 88px 22px; border-top: 1px solid var(--border); backdrop-filter: blur(2px); }
+.ib-landing .setup-section {
+  background: linear-gradient(to bottom,
+    transparent 0, rgba(6, 14, 46, 0.88) 96px,
+    rgba(6, 14, 46, 0.88) calc(100% - 96px), transparent 100%);
+  padding: 108px 22px;
+  backdrop-filter: blur(2px);
+}
 .ib-landing .setup-inner { max-width: 980px; margin: 0 auto; }
 .ib-landing .section-eyebrow { font-size: 14px; font-weight: 600; color: var(--blue); margin-bottom: 8px; letter-spacing: 0.05em; text-transform: uppercase; }
 .ib-landing .section-title {
@@ -277,7 +305,12 @@
 .ib-landing .step-body { font-size: 14px; color: var(--text-2); line-height: 1.5; }
 
 /* ── PRICING ── */
-.ib-landing .pricing-section { background: var(--bg); padding: 88px 22px; border-top: 1px solid var(--border); }
+.ib-landing .pricing-section {
+  background: linear-gradient(to bottom,
+    transparent 0, rgba(7, 15, 50, 0.87) 96px,
+    rgba(7, 15, 50, 0.87) calc(100% - 96px), transparent 100%);
+  padding: 108px 22px;
+}
 .ib-landing .pricing-inner { max-width: 700px; margin: 0 auto; }
 .ib-landing .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 48px; }
 .ib-landing .pricing-card { border-radius: 22px; padding: 36px 28px; text-align: left; }
@@ -360,7 +393,12 @@
 .ib-landing .code-err { margin-top: 8px; font-size: 12px; color: #ff8a8a; }
 
 /* ── FAQ ── */
-.ib-landing .faq-section { background: rgba(6, 10, 26, 0.78); padding: 88px 22px; border-top: 1px solid rgba(38, 58, 120, 0.3); }
+.ib-landing .faq-section {
+  background: linear-gradient(to bottom,
+    transparent 0, rgba(5, 10, 32, 0.90) 96px,
+    rgba(5, 10, 32, 0.90) calc(100% - 96px), transparent 100%);
+  padding: 108px 22px;
+}
 .ib-landing .faq-inner { max-width: 760px; margin: 0 auto; }
 .ib-landing .faq-list { display: flex; flex-direction: column; gap: 10px; }
 .ib-landing .faq-list details { background: rgba(16, 18, 38, 0.68); border: 1px solid rgba(55, 65, 115, 0.5); border-radius: 18px; padding: 18px 22px; }
@@ -372,7 +410,12 @@
 .ib-landing .faq-list details p { margin-top: 12px; font-size: 15px; color: #a1a1a6; line-height: 1.55; }
 
 /* existing Reviews component (Tailwind) sits in this wrapper */
-.ib-landing .reviews-wrap { background: rgba(0, 3, 12, 0.88); padding: 8px 22px 72px; }
+.ib-landing .reviews-wrap {
+  background: linear-gradient(to bottom,
+    transparent 0, rgba(3, 7, 22, 0.93) 96px,
+    rgba(3, 7, 22, 0.93) calc(100% - 96px), transparent 100%);
+  padding: 96px 22px 108px;
+}
 .ib-landing .reviews-wrap > * { max-width: 980px; margin: 0 auto; }
 
 /* ── FOOTER ── */
