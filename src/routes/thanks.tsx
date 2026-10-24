@@ -70,6 +70,13 @@ function ThanksPage() {
         >
           Sign in to set up →
         </Link>
+        <a
+          href="/inboxai-setup-guide.pdf"
+          download
+          className="mt-3 inline-flex w-full items-center justify-center px-6 py-3 rounded-xl border border-border text-sm font-medium text-foreground hover:border-primary hover:text-primary transition-colors"
+        >
+          Download setup guide (PDF)
+        </a>
         <p className="mt-4 text-xs text-muted-foreground">
           It can take up to a minute for your purchase to register. If sign-in says it can't find it, wait a moment and try
           again.

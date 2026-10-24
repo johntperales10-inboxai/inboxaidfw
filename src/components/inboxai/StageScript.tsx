@@ -51,6 +51,13 @@ export function StageScript({ script, premium = false, onBack }: Props) {
 
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Your script is ready</h1>
         <p className="mt-4 text-muted-foreground">Follow the 4 steps below. Takes about 5 minutes. You'll never need to touch code again.</p>
+        <a
+          href="/inboxai-setup-guide.pdf"
+          download
+          className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary underline underline-offset-4 hover:opacity-80"
+        >
+          Download setup guide (PDF)
+        </a>
 
         <div className="mt-8 px-5 py-4 rounded-xl bg-success/10 border border-success/30 flex items-center gap-3">
           <div className="size-6 rounded-full bg-success flex items-center justify-center shrink-0">

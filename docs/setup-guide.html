@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>InboxAI Setup Guide</title>
+<style>
+  @page { size: Letter; margin: 0.6in 0.65in 0.7in; }
+  :root { --ink:#141826; --muted:#5b6275; --blue:#2f7df6; --navy:#0b1530; --soft:#eef4ff; --line:#dbe3f1; --amber:#b7791f; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: "Segoe UI", Inter, -apple-system, "Helvetica Neue", Arial, sans-serif; color:var(--ink); font-size:10.6pt; line-height:1.5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  h1,h2,h3 { letter-spacing:-0.01em; margin:0; }
+  h2 { font-size:17pt; margin:0 0 8px; color:var(--navy); }
+  h3 { font-size:11.5pt; margin:14px 0 6px; }
+  p { margin:6px 0; }
+  .page { page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+  .cover { background: radial-gradient(120% 90% at 15% 10%, #1e5bd6 0%, #0b1530 55%, #070d1f 100%); color:#fff; border-radius:18px; padding:46px 40px; }
+  .cover .eyebrow { text-transform:uppercase; letter-spacing:.14em; font-size:8.5pt; color:#9cc2ff; font-weight:700; }
+  .cover h1 { font-size:32pt; margin-top:10px; line-height:1.1; }
+  .cover p { color:#d6e2ff; font-size:12pt; max-width:5.2in; }
+  .pill { display:inline-block; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); border-radius:999px; padding:4px 12px; font-size:9pt; margin:14px 6px 0 0; }
+  .card { border:1px solid var(--line); border-radius:12px; padding:12px 16px; margin:10px 0; background:#fff; break-inside:avoid; }
+  .card.soft { background:var(--soft); border-color:#cfe0ff; }
+  .card.tip { border-left:4px solid var(--blue); }
+  .card.warn { border-left:4px solid var(--amber); background:#fffaf0; border-color:#f3e2bf; }
+  .card.prem { border:2px solid #9cc2ff; }
+  .tag { display:inline-block; font-size:7.8pt; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--blue); }
+  ol.steps { list-style:none; counter-reset:s; padding:0; margin:8px 0; }
+  ol.steps > li { counter-increment:s; position:relative; padding:9px 0 9px 44px; border-bottom:1px solid var(--line); break-inside:avoid; }
+  ol.steps > li:last-child { border-bottom:0; }
+  ol.steps > li::before { content:counter(s); position:absolute; left:0; top:8px; width:30px; height:30px; border-radius:50%; background:var(--blue); color:#fff; font-weight:800; display:flex; align-items:center; justify-content:center; font-size:11pt; }
+  code { font-family: Consolas, "SF Mono", Menlo, monospace; font-size:9.6pt; background:#eef2fa; border:1px solid var(--line); border-radius:5px; padding:1px 5px; color:#123a8a; }
+  table { width:100%; border-collapse:collapse; margin:8px 0; font-size:10pt; }
+  th, td { text-align:left; padding:7px 9px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:8.5pt; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+  tr { break-inside:avoid; }
+  .muted { color:var(--muted); }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .grid .card { margin:0; }
+  .foot { margin-top:18px; font-size:8.6pt; color:var(--muted); border-top:1px solid var(--line); padding-top:8px; }
+  ul { margin:6px 0; padding-left:20px; } li { margin:3px 0; }
+</style></head><body>
+
+<section class="page">
+  <div class="cover">
+    <div class="eyebrow">InboxAI · Setup Guide</div>
+    <h1>Your inbox, on autopilot.</h1>
+    <p>Everything you need to set up your InboxAI agent, keep it running, and get help. Keep this guide: you can come back to setup any time.</p>
+    <span class="pill">About 5–10 minutes</span><span class="pill">No coding needed</span><span class="pill">Runs in your own Google account</span>
+  </div>
+
+  <h2 style="margin-top:24px">What you bought</h2>
+  <p><strong>InboxAI</strong> is an assistant that lives inside your own Gmail. Once it's installed, it checks your inbox <strong>every hour</strong> and uses Google's Gemini AI to decide what to do with each new email:</p>
+  <div class="grid">
+    <div class="card"><strong>★ Stars</strong> emails from real people and from the senders and organizations you trust.</div>
+    <div class="card"><strong>Clears spam</strong> by moving your spam folder to the trash (if you turn this on).</div>
+    <div class="card"><strong>Unsubscribes</strong> you from newsletters you've stopped opening.</div>
+    <div class="card"><strong>Asks you</strong> by email when it isn't sure, instead of guessing, and learns from your answer.</div>
+  </div>
+  <p class="muted">Nothing is ever permanently deleted. Trashed emails stay in your Gmail trash for 30 days, so you can always get them back.</p>
+
+  <div class="card soft">
+    <span class="tag">Premium only</span>
+    <p style="margin-top:4px"><strong>Priority Inbox dashboard.</strong> Every unread email gets an importance score from 0–100 and is sorted into what needs you now, today, this week, and what can wait. See page 4.</p>
+  </div>
+
+  <h3>Get back to setup any time</h3>
+  <p>Go to <strong>inboxaidfw.com</strong>, click <strong>Sign in to set up</strong>, and sign in with the <strong>same Google account you used at checkout</strong>. Your purchase is linked to that email.</p>
+</section>
+
+<section class="page">
+  <h2>Step 1: Sign in and fill out the form</h2>
+  <ol class="steps">
+    <li>After you pay, you'll see a <strong>“You're all set!”</strong> page. Click <strong>Sign in to set up →</strong> and choose your Google account. <span class="muted">(Closed the page? Just go to inboxaidfw.com and sign in.)</span></li>
+    <li><strong>Get your free AI key.</strong> Click <strong>Get my free Gemini key →</strong>. On Google AI Studio: sign in with Google → <strong>Get API Key</strong> → <strong>Create API key</strong> → copy it. Come back and paste it in the box (it starts with <code>AIzaSy</code>).</li>
+    <li><strong>Star whole organizations</strong> (optional): add domains like <code>@yourschool.org</code> or <code>@company.com</code>. Every email from them gets starred.</li>
+    <li><strong>Who do you always want to hear from?</strong> Add at least one email address you trust, like a teacher, boss or family member. Their emails always get starred.</li>
+    <li><strong>Newsletter cleanup:</strong> choose how long a newsletter can go unopened before InboxAI unsubscribes you.</li>
+    <li><strong>Auto-delete spam:</strong> turn it on to move everything in your spam folder to the trash every hour.</li>
+    <li><strong>Notification email and preference:</strong> where InboxAI should write to you, and how often:
+      <ul>
+        <li><strong>Only when action needed</strong> (recommended): it only writes when it finds something it isn't sure about.</li>
+        <li><strong>Daily summary</strong>: one message a day with everything it did.</li>
+        <li><strong>Every run</strong>: a message every hour (not recommended).</li>
+      </ul>
+    </li>
+  </ol>
+  <div class="card tip"><strong>Keep your AI key private.</strong> It's baked into your personal script, so don't share your script with anyone.</div>
+</section>
+
+<section class="page">
+  <h2>Step 2: Install your script</h2>
+  <p>When you finish the form, the site builds <strong>your own ready-to-use script</strong> with your settings already inside. Click <strong>Copy my ready-to-use script</strong>, then:</p>
+  <ol class="steps">
+    <li>Go to <strong>script.google.com</strong> and sign in with the <strong>same Google account as your Gmail</strong>. Click <strong>New project</strong>.</li>
+    <li>Delete everything in the editor. Paste your script with <strong>Ctrl+V</strong> (Cmd+V on Mac). Save with <strong>Ctrl+S</strong> (Cmd+S).</li>
+    <li>At the top of the editor there's a dropdown that says <code>myFunction</code>. Change it to <code>testGemini</code> and press <strong>▶ Run</strong>. Accept the permissions Google asks for. This checks that your AI key works.</li>
+    <li>Change the dropdown to <code>setupTrigger</code> and press <strong>▶ Run</strong>. <strong>Your agent is now live</strong> and runs every hour by itself. You'll get a “Gmail Agent active!” email.</li>
+  </ol>
+  <div class="card warn">
+    <strong>“Google hasn't verified this app”?</strong> Because the script is yours and runs only in your account, Google may show this warning the first time. Click <strong>Advanced</strong>, then <strong>Go to … (unsafe)</strong>, then <strong>Allow</strong>. The script only runs in your own account, and nobody else sees your email.
+  </div>
+
+  <h2 style="margin-top:20px">After setup: answering your agent</h2>
+  <p>When InboxAI isn't sure about an email, it leaves it alone and sends you a <strong>“email(s) need your attention”</strong> message with a numbered list. <strong>Just reply to that email</strong> with simple commands. It reads your reply on its next hourly run.</p>
+  <table>
+    <tr><th style="width:34%">Reply with</th><th>What happens</th></tr>
+    <tr><td><code>TRASH 1</code></td><td>Trashes email #1</td></tr>
+    <tr><td><code>STAR 2</code></td><td>Stars email #2</td></tr>
+    <tr><td><code>UNSUB 3</code></td><td>Unsubscribes you from email #3's sender</td></tr>
+    <tr><td><code>IGNORE 1</code></td><td>Leaves email #1 alone</td></tr>
+    <tr><td><code>TRASH 1, UNSUB 2, STAR 3</code></td><td>Does several at once</td></tr>
+  </table>
+</section>
+
+<section class="page">
+  <h2>Your agent learns from your answers</h2>
+  <p>Every answer becomes a rule, so InboxAI stops asking about the same thing. Add a word to choose how far the rule reaches:</p>
+  <table>
+    <tr><th style="width:34%">Reply with</th><th>Rule it learns</th></tr>
+    <tr><td><code>TRASH 1</code></td><td>For that exact sender (the default)</td></tr>
+    <tr><td><code>TRASH 1 DOMAIN</code></td><td>For everyone at that sender's domain</td></tr>
+    <tr><td><code>UNSUB 2 TYPE</code></td><td>For that kind of email (unsubscribe request, meeting request, pricing question…)</td></tr>
+    <tr><td><code>TRASH 3 ONCE</code></td><td>Just this once, no rule learned</td></tr>
+  </table>
+  <h3>See or delete what it learned</h3>
+  <ul>
+    <li>Reply <code>RULES</code> to any agent email: it emails you the full list with rule IDs.</li>
+    <li>Reply <code>FORGET R123abc</code> to delete one rule, or <code>FORGET ALL</code> to delete them all.</li>
+    <li>Or, in script.google.com, run <code>showRules</code>, <code>deleteRule</code> or <code>resetRules</code> from the dropdown.</li>
+  </ul>
+
+  <div class="card prem" style="margin-top:16px">
+    <span class="tag">Premium only</span>
+    <h3 style="margin-top:4px">Open your Priority Inbox</h3>
+    <p>Your Premium script includes the Priority Inbox dashboard. It runs inside your own Google account, so your email never passes through our servers. Make sure your Gemini key is filled in, then publish it as a private web app (about 2 minutes):</p>
+    <ol class="steps">
+      <li>In the same script editor, click the blue <strong>Deploy</strong> button (top right) → <strong>New deployment</strong>.</li>
+      <li>Click the gear ⚙ next to “Select type” and choose <strong>Web app</strong>.</li>
+      <li>Set <strong>Execute as: Me</strong> and <strong>Who has access: Only myself</strong>. Click <strong>Deploy</strong>, then <strong>Authorize access</strong> if Google asks.</li>
+      <li>Copy the <strong>Web app URL</strong>. That's your private Priority Inbox. Bookmark it, or save it at <strong>inboxaidfw.com/dashboard</strong> so it's one click away.</li>
+    </ol>
+    <p class="muted">Changed your script later? Use Deploy → Manage deployments → Edit (pencil icon) → Version: New version → Deploy, so the dashboard keeps the same address.</p>
+  </div>
+</section>
+
+<section class="page">
+  <h2>Troubleshooting</h2>
+  <table>
+    <tr><th style="width:36%">Problem</th><th>What to do</th></tr>
+    <tr><td>Sign-in says it can't find your purchase</td><td>It can take up to a minute for a purchase to register. Wait a moment and try again.</td></tr>
+    <tr><td>Still can't find it</td><td>Make sure you're signed in with the Google account for the <strong>email you used at checkout</strong>. If that email isn't a Google account, email us and we'll move your purchase over.</td></tr>
+    <tr><td><code>testGemini</code> shows an error</td><td>Your AI key may be missing or copied wrong. Go back to inboxaidfw.com, sign in, paste the key again, and copy the new script into your project.</td></tr>
+    <tr><td>Nothing happens after setup</td><td>Make sure you ran <code>setupTrigger</code>, not just <code>testGemini</code>. You should have received a “Gmail Agent active!” email.</td></tr>
+    <tr><td>It trashed something it shouldn't have</td><td>Restore it from Gmail's trash (emails stay there for 30 days). To stop it happening again, add the sender to your trusted list and rebuild your script.</td></tr>
+  </table>
+
+  <h2 style="margin-top:20px">Pause or remove InboxAI</h2>
+  <ul>
+    <li><strong>Pause:</strong> in script.google.com, open your project, choose <code>stopAgent</code> from the dropdown and press <strong>▶ Run</strong>. This stops the hourly runs. Run <code>setupTrigger</code> again to restart.</li>
+    <li><strong>Remove completely:</strong> run <code>stopAgent</code>, then go to <strong>myaccount.google.com/permissions</strong> and remove your script's access. You can also delete the project in script.google.com.</li>
+  </ul>
+
+  <div class="card soft" style="margin-top:18px">
+    <h3 style="margin-top:0">Need help?</h3>
+    <p>Email <strong>inboxaidfw@gmail.com</strong> and include the email you bought with. You can always restart setup at <strong>inboxaidfw.com → Sign in to set up</strong>.</p>
+  </div>
+  <div class="foot">InboxAI · inboxaidfw.com · Your agent runs entirely inside your own Google account. You can revoke its access at any time from your Google account settings.</div>
+</section>
+</body></html>
