@@ -32,7 +32,9 @@ git add <files> && git commit -m "..." && git push   # Vercel auto-deploys main
 - `src/routes/api/public/stripe-webhook.ts`, `gumroad-webhook.ts`: record purchases in the Supabase `purchases` table and never downgrade Premium.
 - `src/lib/purchases.functions.ts`: `isPremiumUser` / `checkMyPremium`, enforced on the server by `dashboard.functions.ts`.
 
-## Status (2026-10-14)
+## Status (2026-11-04)
 - Premium is on sale. Its dashboard runs as an Apps Script web app inside the customer’s own Google account (`src/lib/appsScript/`), gated by `PREMIUM_ON_SALE` in `src/lib/features.ts`.
-- Stripe live mode is configured in Vercel (products, webhook at `/api/public/stripe-webhook`, env vars), but the Stripe account is paused pending identity verification by an adult account representative and a payout bank account. Until then, paid checkout fails and the site falls back to Gumroad automatically; no code change is needed once the account is activated.
-- To do: activate the Stripe account; run a $0 live end-to-end checkout test; reduce the restricted API key to the minimum permissions; turn off the old public Gumroad codes; full QA pass on the reply-command system.
+- Stripe live mode is active (owner reported the account enabled on 2026-10-18). Products, the webhook at `/api/public/stripe-webhook` and env vars are set in Vercel. Gumroad stays as an automatic fallback if Stripe checkout fails.
+- A customer setup guide PDF lives at `public/inboxai-setup-guide.pdf` (source: `docs/setup-guide.html`), linked from the Thanks page and the script page.
+- The Supabase CLI now requires `--read-only` for read queries run by an agent (writes need explicit owner confirmation).
+- To do: reduce the restricted Stripe API key to the minimum permissions; turn off the old public Gumroad codes; full QA pass on the reply-command system.

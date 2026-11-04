@@ -50,7 +50,7 @@ export function StageScript({ script, premium = false, onBack }: Props) {
         </button>
 
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Your script is ready</h1>
-        <p className="mt-4 text-muted-foreground">Follow the 4 steps below. Takes about 5 minutes. You'll never need to touch code again.</p>
+        <p className="mt-4 text-muted-foreground">Follow the 3 steps below. Takes about 5 minutes. You'll never need to touch code again.</p>
         <a
           href="/inboxai-setup-guide.pdf"
           download
@@ -86,11 +86,12 @@ export function StageScript({ script, premium = false, onBack }: Props) {
         </div>
 
         <div className="mt-16">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Now install it in 2 steps</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Now install it in 3 steps</h2>
           <div className="mt-8 space-y-6">
             {[
               "Go to script.google.com — sign in with your Gmail account, click New Project, delete the default code, and paste your script. Save with Ctrl+S.",
-              "Click the dropdown at the top — change it from myFunction to setupTrigger — press the Play button. Accept the permissions Google asks for. Your agent is now live.",
+              "Click the dropdown at the top — change it from myFunction to testGemini — press the Play button. Accept the permissions Google asks for. This checks that your Gemini key works.",
+              "Change the dropdown to setupTrigger and press Play again. Your agent is now live and runs every hour.",
             ].map((s, i) => (
               <div key={i} className="flex gap-6 p-8 rounded-2xl bg-card border border-border">
                 <div className="size-16 shrink-0 rounded-full bg-primary text-primary-foreground font-bold text-3xl flex items-center justify-center">
@@ -149,6 +150,7 @@ export function StageScript({ script, premium = false, onBack }: Props) {
         </div>
 
         <div className="mt-12 space-y-3">
+          <h2 className="text-2xl font-bold tracking-tight">Detailed steps</h2>
           {steps.map((s, i) => (
             <div key={i} className="flex gap-4 p-5 rounded-xl bg-card border border-border">
               <div className="size-8 shrink-0 rounded-full bg-primary/15 text-primary font-semibold text-sm flex items-center justify-center">
