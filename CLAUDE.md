@@ -37,4 +37,5 @@ git add <files> && git commit -m "..." && git push   # Vercel auto-deploys main
 - Stripe live mode is active (owner reported the account enabled on 2026-10-18). Products, the webhook at `/api/public/stripe-webhook` and env vars are set in Vercel. Gumroad stays as an automatic fallback if Stripe checkout fails.
 - A customer setup guide PDF lives at `public/inboxai-setup-guide.pdf` (source: `docs/setup-guide.html`), linked from the Thanks page and the script page.
 - The Supabase CLI now requires `--read-only` for read queries run by an agent (writes need explicit owner confirmation).
+- A read-only uptime check runs every 2 hours on GitHub Actions (`.github/workflows/health-check.yml`); a failed run emails the repo owner. GitHub pauses scheduled workflows after 60 days without repo activity.
 - To do: reduce the restricted Stripe API key to the minimum permissions; turn off the old public Gumroad codes; full QA pass on the reply-command system.
