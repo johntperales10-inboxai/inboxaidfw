@@ -1,0 +1,25 @@
+name: Site health check
+
+on:
+  schedule:
+    - cron: "17 */2 * * *" # every 2 hours
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/health-check.yml
+      - .github/scripts/health-check.mjs
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node .github/scripts/health-check.mjs
