@@ -38,4 +38,6 @@ git add <files> && git commit -m "..." && git push   # Vercel auto-deploys main
 - A customer setup guide PDF lives at `public/inboxai-setup-guide.pdf` (source: `docs/setup-guide.html`), linked from the Thanks page and the script page.
 - The Supabase CLI now requires `--read-only` for read queries run by an agent (writes need explicit owner confirmation).
 - A read-only uptime check runs every 2 hours on GitHub Actions (`.github/workflows/health-check.yml`); a failed run emails the repo owner. GitHub pauses scheduled workflows after 60 days without repo activity.
-- To do: reduce the restricted Stripe API key to the minimum permissions; turn off the old public Gumroad codes; full QA pass on the reply-command system.
+- No emojis in site copy (removed 2026-10-14; a light-blue scroll-animation restyle was tried on branch `restyle-light-blue` and rejected).
+- Known bug: `notificationFrequency: "daily"` in `generateScript.ts` only emails during the 8 AM hourly run, so it isn't a real daily summary, and "needs your attention" alerts from other hours are dropped. The fix is to collect actions and flags in PropertiesService and send one combined 8 AM email.
+- To do: fix the daily-summary bug above; turn off the old public Gumroad codes; full QA pass on the reply-command system.
