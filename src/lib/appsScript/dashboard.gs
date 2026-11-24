@@ -13,8 +13,18 @@ function doGet() {
     .addMetaTag("viewport", "width=device-width, initial-scale=1");
 }
 
+// Premium needs an active Premium subscription (checked once a day).
+function requirePremium_() {
+  if (typeof licenseStatus_ !== "function") return;
+  const l = licenseStatus_();
+  if (!l.active || l.tier !== "premium") {
+    throw new Error("Your InboxAI Premium subscription isn't active. Renew at https://inboxaidfw.com/premium");
+  }
+}
+
 // Called by the dashboard page. Returns plain JSON (no Date objects — Apps Script can't return them).
 function getPriorityInbox() {
+  requirePremium_();
   const me = Session.getEffectiveUser().getEmail().toLowerCase();
   const rows = [];
   const seen = {};
@@ -62,6 +72,7 @@ function getPriorityInbox() {
 
 // Called by the dashboard page's Star / Trash / Archive / Done buttons.
 function dashboardAction(messageId, action) {
+  requirePremium_();
   const msg = GmailApp.getMessageById(messageId);
   if (!msg) throw new Error("That email could not be found.");
   const thread = msg.getThread();

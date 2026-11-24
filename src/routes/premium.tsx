@@ -29,7 +29,7 @@ const premium = [
   "Real person detection — never miss a human email",
   "Deadline detection — scores increase as deadlines approach",
   "Background agent runs automatically every hour",
-  "One time payment — no subscription ever",
+  "$9.99 a month, cancel anytime",
 ];
 
 const faqs = [
@@ -38,7 +38,7 @@ const faqs = [
     a: "Basic runs automatically in the background. Premium adds a visual dashboard so you can also see and control everything manually.",
   },
   { q: "Do I need Basic first?", a: "No. Premium includes everything Basic has plus the dashboard." },
-  { q: "Is this really one time?", a: "Yes. $97 once, yours forever." },
+  { q: "How does billing work?", a: "Premium is $9.99 a month and Basic is $4.99 a month. You can cancel anytime from the Manage subscription link, and your agent keeps working until the end of the month you paid for." },
 ];
 
 export const Route = createFileRoute("/premium")({
@@ -48,9 +48,9 @@ export const Route = createFileRoute("/premium")({
   head: () => ({
     meta: [
       { title: "InboxAI Premium — Your inbox on full autopilot" },
-      { name: "description", content: "Upgrade to InboxAI Premium for the Priority Dashboard, AI importance scoring, deadline detection and real person detection. One time payment of $97." },
+      { name: "description", content: "Upgrade to InboxAI Premium for the Priority Dashboard, AI importance scoring, deadline detection and real person detection. $9.99 a month, cancel anytime." },
       { property: "og:title", content: "InboxAI Premium — Your inbox on full autopilot" },
-      { property: "og:description", content: "The Priority Dashboard shows you exactly what matters, while the background agent handles the rest. $97 once." },
+      { property: "og:description", content: "The Priority Dashboard shows you exactly what matters, while the background agent handles the rest. $9.99 a month." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -66,7 +66,7 @@ function PremiumPage() {
     ? "Opening checkout…"
     : appliedCode
       ? "Continue to checkout with code →"
-      : "Get InboxAI Premium — $97";
+      : "Get InboxAI Premium — $9.99/mo";
 
   return (
     <main className="min-h-screen bg-background text-foreground px-6 py-20">
@@ -96,7 +96,7 @@ function PremiumPage() {
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="rounded-3xl border border-border bg-card p-8">
             <h2 className="text-xl font-semibold">Basic</h2>
-            <p className="mt-2 text-3xl font-bold">$50 <span className="text-sm font-normal text-muted-foreground">one time</span></p>
+            <p className="mt-2 text-3xl font-bold">$4.99 <span className="text-sm font-normal text-muted-foreground">per month</span></p>
             <ul className="mt-8 space-y-3">
               {basic.map((item) => (
                 <li key={item} className="flex items-start gap-3 text-sm">
@@ -113,7 +113,7 @@ function PremiumPage() {
             <div aria-hidden className="absolute -inset-px rounded-3xl bg-gradient-to-b from-primary/50 via-primary/15 to-transparent blur-xl opacity-70" />
             <div className="relative rounded-3xl border-2 border-primary/60 bg-card p-8 shadow-2xl shadow-primary/10">
               <h2 className="text-xl font-semibold text-primary">Premium</h2>
-              <p className="mt-2 text-3xl font-bold">$97 <span className="text-sm font-normal text-muted-foreground">one time</span></p>
+              <p className="mt-2 text-3xl font-bold">$9.99 <span className="text-sm font-normal text-muted-foreground">per month</span></p>
               <ul className="mt-8 space-y-3">
                 {premium.map((item) => (
                   <li key={item} className="flex items-start gap-3 text-sm">
@@ -150,7 +150,7 @@ function PremiumPage() {
             {buyLabel}
           </button>
           <p className="mt-3 text-center text-xs text-muted-foreground max-w-md">
-            One time payment. No subscription. Includes everything in Basic plus the Priority Dashboard.
+            Billed monthly. Cancel anytime. Includes everything in Basic plus the Priority Dashboard.
           </p>
 
           {/* Discount code */}

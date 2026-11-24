@@ -7,8 +7,8 @@ import { Landing } from "@/components/inboxai/Landing";
 import landingCss from "@/components/inboxai/landing.css?url";
 import { StageForm } from "@/components/inboxai/StageForm";
 import { StageScript } from "@/components/inboxai/StageScript";
-import { generateScript, type AgentSettings } from "@/lib/generateScript";
-import { checkMyPurchase, checkMyPremium } from "@/lib/purchases.functions";
+import { generateScript, type AgentSettings, type License } from "@/lib/generateScript";
+import { checkMyPurchase, checkMyPremium, getMyLicense } from "@/lib/purchases.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -36,6 +36,9 @@ function Index() {
   const checkPremium = useServerFn(checkMyPremium);
   // Premium buyers get the Priority Inbox dashboard built into their script
   const [isPremium, setIsPremium] = useState(false);
+  const fetchLicense = useServerFn(getMyLicense);
+  // Lets the script check once a day that the subscription is still active
+  const [license, setLicense] = useState<License | null>(null);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -56,8 +59,11 @@ function Index() {
     checkPremium()
       .then((r) => { if (!cancelled) setIsPremium(r.isPremium); })
       .catch(() => { if (!cancelled) setIsPremium(false); });
+    fetchLicense()
+      .then((r) => { if (!cancelled) setLicense(r); })
+      .catch(() => { if (!cancelled) setLicense(null); });
     return () => { cancelled = true; };
-  }, [user, check, checkPremium]);
+  }, [user, check, checkPremium, fetchLicense]);
 
   // After OAuth redirect back, advance to stage 2 only if purchase is verified.
   useEffect(() => {
@@ -72,7 +78,7 @@ function Index() {
     if (purchase !== "verified") {
       return "We could not verify your purchase. Please make sure you signed in with the Google account for the email you used at checkout. If you need help, email inboxaidfw@gmail.com";
     }
-    setScript(generateScript(s, { premium: isPremium }));
+    setScript(generateScript(s, { premium: isPremium, license }));
     setStage(3);
     window.scrollTo({ top: 0, behavior: "instant" });
   };

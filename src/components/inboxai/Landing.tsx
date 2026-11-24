@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Reviews } from "./Reviews";
 import { useCheckout } from "@/lib/useCheckout";
-import { PREMIUM_ON_SALE } from "@/lib/features";
+import { MANAGE_SUBSCRIPTION_HREF, PREMIUM_ON_SALE } from "@/lib/features";
 
 const navLinks = [
   { label: "Features", href: "#features" },
@@ -140,8 +140,8 @@ export function Landing() {
 
   const buyBasic = () => void basic.buy(code);
   const buyPremium = () => void premium.buy(code);
-  const basicLabel = basic.busy ? "Opening checkout…" : "Buy now — $50";
-  const premiumLabel = premium.busy ? "Opening checkout…" : "Buy Premium — $97";
+  const basicLabel = basic.busy ? "Opening checkout…" : "Subscribe — $4.99/mo";
+  const premiumLabel = premium.busy ? "Opening checkout…" : "Get Premium — $9.99/mo";
 
   return (
     <div className="ib-landing">
@@ -189,7 +189,7 @@ export function Landing() {
           deletes spam, unsubscribes from newsletters you've forgotten about, and emails you when it finds something
           it's not sure about.
         </p>
-        <p className="hero-tagline">One time payment · No subscription · No recurring charges. Ever.</p>
+        <p className="hero-tagline">From $4.99 a month · Cancel anytime</p>
         <div className="cta-row">
           <button type="button" className="btn-pill" onClick={buyBasic} disabled={basic.busy}>{basicLabel}</button>
           <Link className="btn-link" to="/signin">Sign in to set up</Link>
@@ -259,22 +259,22 @@ export function Landing() {
       <section className="pricing-section" id="pricing">
         <div className="pricing-inner">
           <p className="section-eyebrow center">Pricing</p>
-          <h2 className="section-title center">One time. No subscriptions.<br />No recurring charges. Ever.</h2>
+          <h2 className="section-title center">Simple monthly pricing.<br />Cancel anytime.</h2>
           <div className="pricing-grid">
             <div className="pricing-card pricing-basic">
               <p className="pricing-label">Basic</p>
-              <div className="pricing-price">$50</div>
-              <p className="pricing-once">One time payment</p>
+              <div className="pricing-price">$4.99</div>
+              <p className="pricing-once">per month</p>
               <ul className="pricing-features">
                 {basicFeatures.map((f) => <li key={f}>{f}</li>)}
               </ul>
               <button type="button" className="btn-pill-outline" onClick={buyBasic} disabled={basic.busy}>{basicLabel}</button>
-              <p className="pricing-note">No subscription. No recurring charges. Ever.</p>
+              <p className="pricing-note">Billed monthly. Cancel anytime.</p>
             </div>
             <div className="pricing-card pricing-premium">
               <p className="pricing-label">Premium{!PREMIUM_ON_SALE && " · Coming soon"}</p>
-              <div className="pricing-price">$97</div>
-              <p className="pricing-once">One time payment</p>
+              <div className="pricing-price">$9.99</div>
+              <p className="pricing-once">per month</p>
               <ul className="pricing-features">
                 {premiumFeatures.map((f) => <li key={f}>{f}</li>)}
               </ul>
@@ -282,7 +282,7 @@ export function Landing() {
                 <>
                   <button type="button" className="btn-pill-dark" onClick={buyPremium} disabled={premium.busy}>{premiumLabel}</button>
                   <p className="pricing-note">
-                    No subscription. No recurring charges. Ever. ·{" "}
+                    Billed monthly. Cancel anytime. ·{" "}
                     <Link to="/premium" search={{ upgrade: undefined }}>See all Premium features ›</Link>
                   </p>
                 </>
@@ -347,7 +347,7 @@ export function Landing() {
           <p className="footer-text">
             InboxAI — Gmail AI automation · Keller, TX<br />
             Questions? <a href="mailto:inboxaidfw@gmail.com">inboxaidfw@gmail.com</a><br />
-            <Link to="/privacy">Privacy Policy</Link> · <Link to="/terms">Terms of Service</Link><br />
+            <a href={MANAGE_SUBSCRIPTION_HREF}>Manage subscription</a> · <Link to="/privacy">Privacy Policy</Link> · <Link to="/terms">Terms of Service</Link><br />
             Copyright © 2026 InboxAI. All rights reserved.
           </p>
         </div>

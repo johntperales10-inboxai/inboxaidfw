@@ -25,7 +25,19 @@ type CheckoutSession = {
   customer_details?: { email?: string | null } | null;
   metadata?: Record<string, string> | null;
   payment_intent?: string | null;
+  subscription?: string | null;
+  customer?: string | null;
 };
+
+type Subscription = {
+  id: string;
+  status: string;
+  items?: { data?: Array<{ price?: { id?: string } }> };
+};
+
+// Subscriptions in these states have ended for good; past_due keeps access
+// while Stripe retries the card.
+const ENDED = new Set(["canceled", "unpaid", "incomplete_expired"]);
 
 type Charge = { payment_intent: string | null; amount: number; amount_refunded: number; refunded: boolean };
 
@@ -44,7 +56,59 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
 
         const event = JSON.parse(rawBody) as { type: string; data: { object: CheckoutSession } };
 
-        // A full refund removes access. Partial refunds (e.g. goodwill credits) keep it.
+        // Subscription ended or changed plan (customer portal or failed payments)
+        if (event.type === "customer.subscription.deleted" || event.type === "customer.subscription.updated") {
+          const sub = event.data.object as unknown as Subscription;
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          if (event.type === "customer.subscription.deleted" || ENDED.has(sub.status)) {
+            const { error } = await supabaseAdmin
+              .from("purchases")
+              .delete()
+              .eq("source", "stripe")
+              .eq("raw->>subscription_id", sub.id);
+            if (error) {
+              console.error("stripe subscription revoke failed", error);
+              return new Response("Server error", { status: 500 });
+            }
+            return new Response("ok");
+          }
+          // Plan switch: the price tells us the tier
+          const priceId = sub.items?.data?.[0]?.price?.id;
+          const tier =
+            priceId && priceId === process.env.STRIPE_PRICE_PREMIUM
+              ? "premium"
+              : priceId && priceId === process.env.STRIPE_PRICE_BASIC
+                ? "basic"
+                : null;
+          if (!tier) return new Response("ignored");
+          const { data: rows, error: readError } = await supabaseAdmin
+            .from("purchases")
+            .select("email, raw")
+            .eq("source", "stripe")
+            .eq("raw->>subscription_id", sub.id);
+          if (readError) {
+            console.error("stripe subscription lookup failed", readError);
+            return new Response("Server error", { status: 500 });
+          }
+          for (const row of rows ?? []) {
+            const raw = (row.raw ?? {}) as Record<string, unknown>;
+            if (raw.tier === tier) continue;
+            const { error } = await supabaseAdmin
+              .from("purchases")
+              .update({
+                raw: { ...raw, tier, product_name: tier === "premium" ? "InboxAI Premium" : "InboxAI Basic" },
+              })
+              .eq("email", row.email);
+            if (error) {
+              console.error("stripe plan switch failed", error);
+              return new Response("Server error", { status: 500 });
+            }
+          }
+          return new Response("ok");
+        }
+
+        // A full refund of an old one-time purchase removes access. Partial refunds
+        // keep it. Subscriptions lose access when they're canceled (above).
         if (event.type === "charge.refunded") {
           const charge = event.data.object as unknown as Charge;
           if (!charge.refunded || !charge.payment_intent) return new Response("ignored");
@@ -100,6 +164,10 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
               currency: session.currency,
               // Lets a later charge.refunded event find this purchase
               payment_intent: session.payment_intent ?? null,
+              // Lets subscription events find (and revoke) this purchase
+              subscription_id: session.subscription ?? null,
+              customer_id: session.customer ?? null,
+              billing: session.subscription ? "monthly" : "one-time",
             },
           },
           { onConflict: "email" },

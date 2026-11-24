@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2 } from "lucide-react";
 import { getCheckoutSummary } from "@/lib/checkout.functions";
 import { CONTACT_EMAIL } from "@/components/inboxai/LegalPage";
+import { MANAGE_SUBSCRIPTION_HREF } from "@/lib/features";
 
 export const Route = createFileRoute("/thanks")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -42,7 +43,7 @@ function ThanksPage() {
       <div className="w-full max-w-lg rounded-3xl border border-border bg-card/80 p-8 shadow-2xl text-center">
         <CheckCircle2 className="mx-auto size-12 text-success" />
         <h1 className="mt-4 text-3xl font-bold tracking-tight">You're all set!</h1>
-        <p className="mt-3 text-muted-foreground">Thanks for buying {tierName}. Your receipt is on its way to your inbox.</p>
+        <p className="mt-3 text-muted-foreground">Thanks for subscribing to {tierName}. Your receipt is on its way to your inbox.</p>
 
         {summary === "loading" && <p className="mt-6 text-sm text-muted-foreground">Looking up your purchase…</p>}
 
@@ -80,6 +81,9 @@ function ThanksPage() {
         <p className="mt-4 text-xs text-muted-foreground">
           It can take up to a minute for your purchase to register. If sign-in says it can't find it, wait a moment and try
           again.
+        </p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Billed monthly. Cancel or switch plans anytime: <a className="underline hover:text-primary" href={MANAGE_SUBSCRIPTION_HREF}>Manage subscription</a>
         </p>
       </div>
     </main>

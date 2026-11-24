@@ -23,8 +23,7 @@ async function stripe(path: string, key: string, init?: { method?: string; body?
   return json;
 }
 
-// Returns a Stripe Checkout URL, or { url: null } when Stripe isn't configured
-// yet so the page falls back to Gumroad.
+// Returns a Stripe Checkout URL, or an error to show when Stripe isn't configured.
 export const startCheckout = createServerFn({ method: "POST" })
   .inputValidator((input: { tier: Tier; code?: string }) => {
     if (input.tier !== "basic" && input.tier !== "premium") throw new Error("Invalid tier");
@@ -39,15 +38,18 @@ export const startCheckout = createServerFn({ method: "POST" })
     const key = process.env.STRIPE_SECRET_KEY;
     const price =
       data.tier === "premium" ? process.env.STRIPE_PRICE_PREMIUM : process.env.STRIPE_PRICE_BASIC;
-    if (!key || !price) return { url: null, error: null };
+    if (!key || !price) {
+      return { url: null, error: "Checkout is unavailable right now. Please email inboxaidfw@gmail.com." };
+    }
 
     const origin = new URL(getRequest().url).origin;
     const body = new URLSearchParams({
-      mode: "payment",
+      // Monthly subscription: the prices in Stripe are recurring
+      mode: "subscription",
       "line_items[0][price]": price,
       "line_items[0][quantity]": "1",
       "metadata[tier]": data.tier,
-      "payment_intent_data[metadata][tier]": data.tier,
+      "subscription_data[metadata][tier]": data.tier,
       // Access is unlocked by email: /thanks shows which email to sign in with.
       // Stripe fills in {CHECKOUT_SESSION_ID} itself.
       success_url: `${origin}/thanks?session_id={CHECKOUT_SESSION_ID}`,

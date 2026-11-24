@@ -1,6 +1,6 @@
 # InboxAI — notes for Claude Code
 
-InboxAI is a paid Gmail AI agent: a setup wizard that generates a Google Apps Script agent (Basic, $50) plus a Premium AI priority dashboard ($97).
+InboxAI is a paid Gmail AI agent: a setup wizard that generates a Google Apps Script agent (Basic, $4.99/month) plus a Premium AI priority dashboard ($9.99/month). Before Nov 2026 it was sold as a one-time purchase ($50 / $97); those buyers keep access.
 
 - Stack: Lovable + TanStack Start + Supabase, deployed on Vercel.
 - Live: https://inboxaidfw.com (custom domain on Vercel) and https://inboxaidfw.vercel.app
@@ -28,13 +28,16 @@ git add <files> && git commit -m "..." && git push   # Vercel auto-deploys main
 
 ## Key files
 - `src/lib/generateScript.ts`: the Gmail agent script template (Gemini model, trusted senders, reply commands, learned rules).
-- `src/lib/checkout.functions.ts` + `src/lib/useCheckout.ts`: Stripe Checkout, falling back to Gumroad when Stripe env vars are missing.
-- `src/routes/api/public/stripe-webhook.ts`, `gumroad-webhook.ts`: record purchases in the Supabase `purchases` table and never downgrade Premium.
+- `src/lib/checkout.functions.ts` + `src/lib/useCheckout.ts`: Stripe Checkout in subscription mode. No Gumroad fallback any more; missing Stripe env vars show an error.
+- `src/routes/api/public/stripe-webhook.ts`: records subscriptions in the Supabase `purchases` table (`raw.subscription_id`), switches tier on `customer.subscription.updated`, deletes the row on `customer.subscription.deleted`. `gumroad-webhook.ts` is kept only for old Gumroad sales.
+- License check: `src/lib/license.server.ts` (HMAC of the email with `LICENSE_SECRET`), `/api/public/license`, and `licenseModule()` in `generateScript.ts`. Generated scripts check once a day and pause when the subscription ends; they fail open if the site is unreachable. Never rotate `LICENSE_SECRET` (it would pause every customer). The check lives in the customer's own editable script, so it deters casual reuse but can be removed by someone determined.
+- `BILLING_PORTAL_URL` in `src/lib/features.ts`: Stripe no-code customer portal link behind the "Manage subscription" links.
 - `src/lib/purchases.functions.ts`: `isPremiumUser` / `checkMyPremium`, enforced on the server by `dashboard.functions.ts`.
 
-## Status (2026-11-04)
+## Status (2026-11-23)
 - Premium is on sale. Its dashboard runs as an Apps Script web app inside the customer’s own Google account (`src/lib/appsScript/`), gated by `PREMIUM_ON_SALE` in `src/lib/features.ts`.
-- Stripe live mode is active (owner reported the account enabled on 2026-10-18). Products, the webhook at `/api/public/stripe-webhook` and env vars are set in Vercel. Gumroad stays as an automatic fallback if Stripe checkout fails.
+- Stripe live mode is active (owner reported the account enabled on 2026-10-18). Products, the webhook at `/api/public/stripe-webhook` and env vars are set in Vercel.
+- Switching to monthly subscriptions (2026-11-23, branch `subscriptions`, not merged yet): needs the new recurring price IDs in `STRIPE_PRICE_BASIC` / `STRIPE_PRICE_PREMIUM`, a `LICENSE_SECRET` env var, subscription events on the Stripe webhook, and the customer portal link. Ship the code and the price IDs together, since one-time prices fail in subscription mode.
 - A customer setup guide PDF lives at `public/inboxai-setup-guide.pdf` (source: `docs/setup-guide.html`), linked from the Thanks page and the script page.
 - The Supabase CLI now requires `--read-only` for read queries run by an agent (writes need explicit owner confirmation).
 - A read-only uptime check runs every 2 hours on GitHub Actions (`.github/workflows/health-check.yml`); a failed run emails the repo owner. GitHub pauses scheduled workflows after 60 days without repo activity.

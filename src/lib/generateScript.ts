@@ -19,7 +19,54 @@ function premiumDashboardModule(): string {
   return `${dashboardGs}\nconst DASHBOARD_HTML = ${JSON.stringify(dashboardHtml)};\n`;
 }
 
-export function generateScript(s: AgentSettings, opts: { premium?: boolean } = {}): string {
+export type License = { email: string; key: string };
+
+// Daily subscription check. If the server says the subscription has ended, the
+// agent (and Premium dashboard) pause until it's renewed. If the server can't be
+// reached, the script keeps working and asks again on the next run.
+function licenseModule(l: License, premium: boolean): string {
+  return `
+// ============================================================
+//  SUBSCRIPTION CHECK — once a day this asks inboxaidfw.com if
+//  your subscription is active. Only your email and license key are sent.
+// ============================================================
+const LICENSE = { email: ${JSON.stringify(l.email)}, key: ${JSON.stringify(l.key)}, url: "https://inboxaidfw.com/api/public/license" };
+
+function licenseStatus_() {
+  const props = PropertiesService.getScriptProperties();
+  let status = props.getProperty("licenseStatus") || "active";
+  let tier = props.getProperty("licenseTier") || ${JSON.stringify(premium ? "premium" : "basic")};
+  const checkedAt = Number(props.getProperty("licenseCheckedAt") || 0);
+  if (Date.now() - checkedAt < 86400000) return { active: status === "active", tier: tier };
+  try {
+    const r = UrlFetchApp.fetch(LICENSE.url, { method: "post", contentType: "application/json", payload: JSON.stringify({ email: LICENSE.email, key: LICENSE.key }), muteHttpExceptions: true });
+    const code = r.getResponseCode();
+    if (code === 200 || code === 403) {
+      const j = code === 200 ? JSON.parse(r.getContentText()) : { active: false };
+      const was = status;
+      status = j.active ? "active" : "inactive";
+      if (j.tier) tier = j.tier;
+      props.setProperties({ licenseStatus: status, licenseTier: tier, licenseCheckedAt: String(Date.now()) });
+      if (was === "active" && status !== "active") {
+        try { GmailApp.sendEmail(SETTINGS.notificationEmail, "Your InboxAI subscription has ended", "Your InboxAI subscription is no longer active, so your Gmail agent has paused.\\n\\nTo turn it back on, subscribe again at https://inboxaidfw.com/#pricing with the same email. The agent picks it up within a day, no need to change your script.\\n\\nQuestions? Email inboxaidfw@gmail.com"); } catch (e) {}
+      }
+    }
+  } catch (e) {}
+  return { active: status === "active", tier: tier };
+}
+
+// Run this by hand after renewing to resume right away instead of within a day.
+function checkSubscriptionNow() {
+  PropertiesService.getScriptProperties().deleteProperty("licenseCheckedAt");
+  Logger.log(JSON.stringify(licenseStatus_()));
+}
+`;
+}
+
+export function generateScript(
+  s: AgentSettings,
+  opts: { premium?: boolean; license?: License | null } = {},
+): string {
   const senders = s.trustedSenders
     .map((e) => e.trim())
     .filter(Boolean)
@@ -181,6 +228,7 @@ function setupTrigger() {
 }
 
 function runAgent() {
+  if (typeof licenseStatus_ === "function" && !licenseStatus_().active) { Logger.log("InboxAI subscription inactive: agent paused."); return; }
   PropertiesService.getScriptProperties().setProperty("lastRunAt", new Date().toISOString());
   checkForReplies();
   const flagged = [], actioned = [];
@@ -411,5 +459,6 @@ function markThreadsFlagged(flagged) {
   PropertiesService.getScriptProperties().setProperty("flaggedThreads", JSON.stringify(m));
 }
 `;
-  return opts.premium ? script + premiumDashboardModule() : script;
+  const withLicense = opts.license ? script + licenseModule(opts.license, !!opts.premium) : script;
+  return opts.premium ? withLicense + premiumDashboardModule() : withLicense;
 }

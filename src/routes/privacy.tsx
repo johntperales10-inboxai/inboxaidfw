@@ -13,7 +13,7 @@ export const Route = createFileRoute("/privacy")({
 
 function PrivacyPage() {
   return (
-    <LegalPage title="Privacy Policy" updated="September 30, 2026">
+    <LegalPage title="Privacy Policy" updated="November 23, 2026">
       <section>
         <p>
           InboxAI (“we”, “us”) is a Gmail automation product run from Keller, Texas. This policy explains what
@@ -35,7 +35,7 @@ function PrivacyPage() {
         <h2>Information we collect</h2>
         <ul>
           <li><strong>Google sign-in:</strong> when you sign in with Google we receive your name, email address, and profile picture so we can confirm your purchase and keep you signed in.</li>
-          <li><strong>Purchase records:</strong> when you buy InboxAI, our payment provider (Gumroad or Stripe) sends us your email address, order ID, product, and order details. We never see or store your card number.</li>
+          <li><strong>Purchase records:</strong> when you buy InboxAI, our payment provider (Stripe, or Gumroad for older purchases) sends us your email address, order ID, product, subscription status, and order details. We never see or store your card number.</li>
           <li><strong>Reviews:</strong> if you post a review, we store the first name, star rating, and text you enter. Reviews are shown publicly on our website.</li>
           <li><strong>Setup form:</strong> the trusted senders, settings, and API key you enter in the setup wizard are used in your browser to build your script. They are not sent to or stored on our servers.</li>
         </ul>
@@ -47,8 +47,9 @@ function PrivacyPage() {
           The agent is a Google Apps Script that you install in your own Google account. It reads, stars, labels,
           trashes, and unsubscribes from your email using your Google account’s own permissions, and it sends
           short excerpts of emails (sender, subject, and a preview) to Google’s Gemini AI using an API key you
-          provide. This all happens between your Google account and Google. InboxAI does not receive this data,
-          and you can stop the agent at any time by running <code>stopAgent</code> or removing its access at
+          provide. This all happens between your Google account and Google. InboxAI does not receive this data.
+          Once a day the script sends your purchase email and license key (never any email content) to
+          inboxaidfw.com to check that your subscription is active. You can stop the agent at any time by running <code>stopAgent</code> or removing its access at
           myaccount.google.com/permissions.
         </p>
       </section>
@@ -84,7 +85,7 @@ function PrivacyPage() {
         <h2>Who we share it with</h2>
         <p>
           We share information only with the service providers that run InboxAI: Supabase (database and sign-in),
-          Vercel (website hosting), Gumroad and Stripe (payments), and Google (sign-in and Gemini AI). We may also
+          Vercel (website hosting), Stripe and Gumroad (payments), and Google (sign-in and Gemini AI). We may also
           disclose information if required by law.
         </p>
       </section>

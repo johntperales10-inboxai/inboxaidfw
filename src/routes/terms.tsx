@@ -13,7 +13,7 @@ export const Route = createFileRoute("/terms")({
 
 function TermsPage() {
   return (
-    <LegalPage title="Terms of Service" updated="September 30, 2026">
+    <LegalPage title="Terms of Service" updated="November 23, 2026">
       <section>
         <p>
           These terms apply to your use of www.inboxaidfw.com and the InboxAI Gmail agent (“InboxAI”). By buying or
@@ -25,9 +25,9 @@ function TermsPage() {
       <section>
         <h2>What you get</h2>
         <p>
-          A one-time purchase gives you a personal, non-transferable license to use InboxAI for your own Gmail
+          A subscription gives you a personal, non-transferable license to use InboxAI for your own Gmail
           account(s): the setup wizard, your generated Gmail agent script, and, for Premium, the Priority Dashboard.
-          There is no subscription and no recurring charge.
+          Your script checks once a day that your subscription is active, and it pauses if the subscription ends.
         </p>
       </section>
 
@@ -54,8 +54,11 @@ function TermsPage() {
       <section>
         <h2>Payments and refunds</h2>
         <p>
-          Purchases are processed by Gumroad or Stripe. If InboxAI isn’t working for you, email {CONTACT_EMAIL} and
-          we’ll try to fix it. Refund requests are handled by email.
+          Subscriptions are billed monthly through Stripe (Basic $4.99 a month, Premium $9.99 a month) and renew
+          automatically until you cancel. You can cancel anytime from the Manage subscription link on our site or by
+          emailing {CONTACT_EMAIL}; you keep access until the end of the month you already paid for. Earlier one-time
+          purchases keep their access. If InboxAI isn’t working for you, email {CONTACT_EMAIL} and we’ll try to fix
+          it. Refund requests are handled by email.
         </p>
       </section>
 

@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
+import { rawIsPremium } from "@/lib/tier";
 
 export const checkMyPurchase = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -37,17 +38,24 @@ export async function isPremiumUser(context: AuthContext): Promise<{ isPremium: 
     console.error("checkMyPremium error", error);
     return { isPremium: false, email };
   }
-  const isPremium = (data ?? []).some((row) => {
-    const raw = (row.raw ?? {}) as Record<string, unknown>;
-    const haystack = [raw["product_name"], raw["product_permalink"], raw["variants"], raw["tier"]]
-      .filter((v) => typeof v === "string")
-      .join(" ")
-      .toLowerCase();
-    return haystack.includes("premium");
-  });
+  const isPremium = (data ?? []).some((row) => rawIsPremium(row.raw));
   return { isPremium, email };
 }
 
 export const checkMyPremium = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(({ context }) => isPremiumUser(context));
+
+// The license key that goes into the customer's script, so the script can check
+// once a day that the subscription is still active. Null when licensing is off.
+export const getMyLicense = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ email: string; key: string } | null> => {
+    const email = (context.claims?.email as string | undefined)?.toLowerCase() ?? null;
+    if (!email) return null;
+    const { data } = await context.supabase.from("purchases").select("email").eq("email", email).maybeSingle();
+    if (!data) return null;
+    const { licenseKeyFor } = await import("@/lib/license.server");
+    const key = licenseKeyFor(email);
+    return key ? { email, key } : null;
+  });
