@@ -30,7 +30,7 @@ function licenseModule(l: License, premium: boolean): string {
 //  SUBSCRIPTION CHECK — once a day this asks inboxaidfw.com if
 //  your subscription is active. Only your email and license key are sent.
 // ============================================================
-const LICENSE = { email: ${JSON.stringify(l.email)}, key: ${JSON.stringify(l.key)}, url: "https://inboxaidfw.com/api/public/license" };
+const LICENSE = { email: ${JSON.stringify(l.email)}, key: ${JSON.stringify(l.key)}, url: "https://www.inboxaidfw.com/api/public/license" };
 
 function licenseStatus_() {
   const props = PropertiesService.getScriptProperties();
