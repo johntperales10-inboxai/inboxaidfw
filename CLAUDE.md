@@ -37,11 +37,11 @@ git add <files> && git commit -m "..." && git push   # Vercel auto-deploys main
 ## Status (2026-11-23)
 - Premium is on sale. Its dashboard runs as an Apps Script web app inside the customer’s own Google account (`src/lib/appsScript/`), gated by `PREMIUM_ON_SALE` in `src/lib/features.ts`.
 - Stripe live mode is active (owner reported the account enabled on 2026-10-18). Products, the webhook at `/api/public/stripe-webhook` and env vars are set in Vercel.
-- Switching to monthly subscriptions (2026-11-23, branch `subscriptions`, not merged yet): needs the new recurring price IDs in `STRIPE_PRICE_BASIC` / `STRIPE_PRICE_PREMIUM`, a `LICENSE_SECRET` env var, subscription events on the Stripe webhook, and the customer portal link. Ship the code and the price IDs together, since one-time prices fail in subscription mode.
+- Monthly subscriptions went live on 2026-11-23 (recurring prices in `STRIPE_PRICE_BASIC` / `STRIPE_PRICE_PREMIUM`, `LICENSE_SECRET` set in Vercel). The license check calls `www.inboxaidfw.com`, because the apex domain 308-redirects. Still to confirm: subscription events on the Stripe webhook, and a real paid subscribe, cancel and refund test by the owner.
 - A customer setup guide PDF lives at `public/inboxai-setup-guide.pdf` (source: `docs/setup-guide.html`), linked from the Thanks page and the script page.
 - The Supabase CLI now requires `--read-only` for read queries run by an agent (writes need explicit owner confirmation).
 - A read-only uptime check runs every 2 hours on GitHub Actions (`.github/workflows/health-check.yml`); a failed run emails the repo owner. GitHub pauses scheduled workflows after 60 days without repo activity.
 - No emojis in site copy (removed 2026-10-14; a light-blue scroll-animation restyle was tried on branch `restyle-light-blue` and rejected).
 - Known bug: `notificationFrequency: "daily"` in `generateScript.ts` only emails during the 8 AM hourly run, so it isn't a real daily summary, and "needs your attention" alerts from other hours are dropped. The fix is to collect actions and flags in PropertiesService and send one combined 8 AM email.
-- To do: fix the daily-summary bug above; turn off the old public Gumroad codes; full QA pass on the reply-command system.
+- To do: fix the daily-summary bug above; unpublish the Gumroad products and turn off the old Gumroad codes; full QA pass on the reply-command system.
 - Marketing (2026-11-23): short-form video plan started, 11 vertical videos posting Nov 25 to Dec 19 (TikTok, Reels, Shorts), month review on Dec 20. Scripts and schedule are kept outside the repo.
