@@ -44,4 +44,4 @@ git add <files> && git commit -m "..." && git push   # Vercel auto-deploys main
 - No emojis in site copy (removed 2026-10-14; a light-blue scroll-animation restyle was tried on branch `restyle-light-blue` and rejected).
 - Known bug: `notificationFrequency: "daily"` in `generateScript.ts` only emails during the 8 AM hourly run, so it isn't a real daily summary, and "needs your attention" alerts from other hours are dropped. The fix is to collect actions and flags in PropertiesService and send one combined 8 AM email.
 - To do: fix the daily-summary bug above; unpublish the Gumroad products and turn off the old Gumroad codes; full QA pass on the reply-command system.
-- Marketing (2026-11-23): short-form video plan started, 11 vertical videos posting Nov 25 to Dec 19 (TikTok, Reels, Shorts), month review on Dec 20. Scripts and schedule are kept outside the repo.
+- Marketing (2026-11-23): short-form video plan started, 11 vertical videos posting Nov 25 to Dec 19 (TikTok, Reels, Shorts), month review on Dec 20. Scripts and schedule are kept outside the repo. First video posted early to Instagram and TikTok on 2026-11-24.
