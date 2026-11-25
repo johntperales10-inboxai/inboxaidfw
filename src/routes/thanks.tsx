@@ -12,7 +12,7 @@ export const Route = createFileRoute("/thanks")({
   }),
   head: () => ({
     meta: [
-      { title: "Thanks for buying InboxAI" },
+      { title: "Thanks for subscribing to InboxAI" },
       { name: "robots", content: "noindex" },
     ],
   }),

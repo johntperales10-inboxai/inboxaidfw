@@ -62,7 +62,8 @@ const faqs = [
   { q: "Is my email safe?", a: "Yes. The agent runs entirely inside your own Google account — nobody else ever sees your emails. You can revoke access any time from your Google account settings." },
   { q: "Do I need to know how to code?", a: "No. The setup wizard builds your custom script automatically. You copy and paste it into one place and click run. The whole process takes about 5 minutes." },
   { q: "What if the agent makes a mistake?", a: "The agent never permanently deletes anything. Trashed emails stay in your trash for 30 days so you can always recover them. And if it's unsure about something, it asks you first rather than guessing." },
-  { q: "What happens after I pay?", a: "Come back to this page and click “Sign in to set up” using the same Google account you bought with. You'll fill out a short form, copy your custom script, and follow the steps. Most people are up and running in under 10 minutes." },
+  { q: "What happens after I pay?", a: "Come back to this page and click “Sign in to set up” using the same Google account you subscribed with. You'll fill out a short form, copy your custom script, and follow the steps. Most people are up and running in under 10 minutes." },
+  { q: "How do I cancel?", a: "Click Manage subscription at the bottom of this page and sign in with your checkout email. You can cancel or switch plans anytime, and your agent keeps working until the end of the month you already paid for. After that it pauses on its own." },
   { q: "Can I stop it whenever I want?", a: "Yes. You can pause it instantly by running one function, or fully remove all access from your Google account settings." },
 ];
 
@@ -243,7 +244,7 @@ export function Landing() {
       <section className="setup-section" id="setup">
         <div className="setup-inner">
           <p className="section-eyebrow">Setup</p>
-          <h2 className="section-title">Set it up once.<br />Let it run forever.</h2>
+          <h2 className="section-title">Set it up once.<br />It runs on its own.</h2>
           <div className="step-grid">
             {steps.map((s) => (
               <div className="step-card" key={s.n}>

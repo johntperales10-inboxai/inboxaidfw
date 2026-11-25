@@ -76,7 +76,7 @@ function Index() {
 
   const handleBuild = (s: AgentSettings): string | void => {
     if (purchase !== "verified") {
-      return "We could not verify your purchase. Please make sure you signed in with the Google account for the email you used at checkout. If you need help, email inboxaidfw@gmail.com";
+      return "We could not find an active InboxAI subscription. Please make sure you signed in with the Google account for the email you used at checkout. If you need help, email inboxaidfw@gmail.com";
     }
     setScript(generateScript(s, { premium: isPremium, license }));
     setStage(3);
@@ -100,11 +100,11 @@ function Index() {
     return (
       <main className="min-h-screen bg-background text-foreground flex items-center justify-center px-6 py-20">
         <div className="w-full max-w-lg rounded-3xl border border-border bg-card/80 backdrop-blur p-8 shadow-2xl text-center">
-          <h1 className="text-2xl font-bold tracking-tight">We couldn't find your purchase</h1>
+          <h1 className="text-2xl font-bold tracking-tight">No active subscription found</h1>
           <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
             You're signed in as <span className="font-medium text-foreground">{user.email}</span>, but no
-            InboxAI purchase is on file for this email. Please buy access using this same
-            email, or contact support if you already purchased.
+            active InboxAI subscription is on file for this email. If your subscription ended, subscribe again
+            with this same email to pick up where you left off. If you already subscribed, contact support.
           </p>
           <div className="mt-8 flex flex-col gap-3">
             <button
@@ -132,7 +132,7 @@ function Index() {
   if (user && purchase === "checking") {
     return (
       <main className="min-h-screen bg-background text-foreground flex items-center justify-center">
-        <p className="text-sm text-muted-foreground">Verifying your purchase…</p>
+        <p className="text-sm text-muted-foreground">Checking your subscription…</p>
       </main>
     );
   }
